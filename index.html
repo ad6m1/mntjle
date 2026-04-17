@@ -27,18 +27,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 }
 .login-box{
   background:var(--card);border:1px solid var(--border);border-radius:22px;
-  padding:44px 38px;width:100%;max-width:420px;position:relative;z-index:1;
+  padding:44px 38px;width:100%;max-width:400px;position:relative;z-index:1;
   box-shadow:0 32px 90px rgba(0,0,0,.7);
 }
 .login-logo{
-  text-align:center;font-size:28px;font-weight:700;margin-bottom:4px;
+  text-align:center;font-size:26px;font-weight:700;margin-bottom:4px;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.login-badge{text-align:center;font-size:13px;color:var(--muted);margin-bottom:8px;}
-.login-sub{text-align:center;font-size:15px;font-weight:600;margin-bottom:28px;color:var(--text);}
-.lfield{margin-bottom:18px;}
-.llabel{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;display:block;}
+.login-badge{text-align:center;font-size:12px;color:var(--muted);margin-bottom:28px;}
+.lfield{margin-bottom:16px;}
+.llabel{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;display:block;}
 .linput{
   width:100%;background:rgba(255,255,255,.04);border:2px solid var(--border);
   border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--font);
@@ -49,12 +48,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .lbtn{
   width:100%;background:linear-gradient(135deg,var(--accent),#b8954a);color:#0a0a0f;
   border:none;padding:14px;border-radius:10px;font-family:var(--font);font-size:15px;
-  font-weight:700;cursor:pointer;transition:all .3s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:700;cursor:pointer;transition:all .3s;margin-top:4px;
 }
 .lbtn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(200,169,110,.3);}
 .lbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
-.lerr{color:var(--danger);font-size:13px;margin-top:14px;text-align:center;display:none;padding:10px;background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.2);border-radius:8px;}
-.lok{color:var(--success);font-size:13px;margin-top:14px;text-align:center;display:none;padding:10px;background:rgba(92,184,138,.1);border:1px solid rgba(92,184,138,.2);border-radius:8px;}
+.lerr{color:var(--danger);font-size:13px;margin-top:12px;text-align:center;display:none;padding:8px;background:rgba(224,92,92,.1);border-radius:8px;}
 
 /* ══ LAYOUT ══ */
 #app{display:none;flex-direction:row;min-height:100vh;}
@@ -69,8 +67,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sb-logo{font-size:20px;font-weight:700;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.sb-role-chip{display:inline-flex;align-items:center;gap:5px;margin-top:8px;
-  font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.sb-role-chip{display:inline-flex;align-items:center;gap:5px;margin-top:6px;
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
 .chip-super{background:rgba(200,169,110,.15);color:var(--accent);}
 .chip-sub{background:rgba(106,180,232,.15);color:var(--info);}
 .sb-nav{flex:1;padding:10px 0;overflow-y:auto;}
@@ -82,7 +80,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sbn:hover{background:rgba(255,255,255,.04);color:var(--text);}
 .sbn.active{background:rgba(200,169,110,.08);color:var(--accent);border-right-color:var(--accent);}
 .sbn-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
-.sbn-badge{margin-right:auto;background:var(--accent);color:#0a0a0f;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;}
+.sbn-badge{margin-right:auto;background:var(--accent);color:#0a0a0f;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;}
 .sb-sep{height:1px;background:var(--border);margin:6px 14px;}
 .sb-bottom{padding:14px 18px;border-top:1px solid var(--border);}
 .sb-user{display:flex;align-items:center;gap:10px;}
@@ -104,9 +102,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 20px;position:relative;overflow:hidden;}
 .sc::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:var(--c,var(--accent));}
 .sc-lbl{font-size:12px;color:var(--muted);margin-bottom:8px;}
-.sc-val{font-size:28px;font-weight:700;color:var(--c,var(--accent));}
+.sc-val{font-size:26px;font-weight:700;color:var(--c,var(--accent));}
 .sc-sub{font-size:11px;color:var(--muted);margin-top:3px;}
-.sc-ico{position:absolute;top:14px;left:16px;font-size:28px;opacity:.1;}
+.sc-ico{position:absolute;top:14px;left:16px;font-size:26px;opacity:.12;}
 
 /* CARD */
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:20px;}
@@ -122,7 +120,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .tbl tr:hover td{background:rgba(255,255,255,.02);}
 
 /* BADGES */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
 .b-pending   {background:rgba(200,169,110,.15);color:var(--accent);}
 .b-processing{background:rgba(106,180,232,.15);color:var(--info);}
 .b-completed {background:rgba(92,184,138,.15); color:var(--success);}
@@ -135,7 +133,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .b-inactive{background:rgba(255,255,255,.08);color:var(--muted);}
 
 /* BTN */
-.btn{padding:8px 15px;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.btn{padding:7px 14px;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
 .btn-gold{background:linear-gradient(135deg,var(--accent),#b8954a);color:#0a0a0f;}
 .btn-gold:hover{box-shadow:0 4px 18px rgba(200,169,110,.3);transform:translateY(-1px);}
 .btn-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);}
@@ -239,24 +237,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div class="login-box">
     <div class="login-logo">منتجلي</div>
     <div class="login-badge">🎛 لوحة إدارة النظام</div>
-    <div class="login-sub">أدخل بيانات الدخول</div>
-    
     <div class="lfield">
       <label class="llabel">الإيميل</label>
-      <input class="linput ltr" type="email" id="l-email" placeholder="example@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()">
+      <input class="linput" type="email" id="l-email" placeholder="admin@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    
     <div class="lfield">
       <label class="llabel">كلمة المرور</label>
-      <input class="linput ltr" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <input class="linput" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    
-    <button class="lbtn" id="lbtn" onclick="doLogin()">
-      <span id="lbtn-txt">دخول للوحة</span>
-    </button>
-    
+    <button class="lbtn" id="lbtn" onclick="doLogin()">دخول للوحة</button>
     <div class="lerr" id="lerr"></div>
-    <div class="lok" id="lok"></div>
   </div>
 </div>
 
@@ -270,7 +260,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
       <div id="sb-chip"></div>
     </div>
     <nav class="sb-nav" id="sb-nav">
-      <!-- injected by JS -->
+      <!-- injected by JS based on role -->
     </nav>
     <div class="sb-bottom">
       <div class="sb-user">
@@ -423,7 +413,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 <!-- ══ PORTFOLIO MODAL ══ -->
 <div class="modal-bg" id="m-port">
   <div class="modal">
-    <div class="mhead"><div class="mtitle">إضافة عمل</div><button class="mclose" onclick="closeM('m-port')">✕</button></div>
+    <div class="mhead"><div class="mtitle" id="m-port-title">إضافة عمل</div><button class="mclose" onclick="closeM('m-port')">✕</button></div>
     <div class="mbody">
       <div class="fg"><label class="flabel">عنوان العمل *</label><input class="finput" type="text" id="p-title" placeholder="مثلاً: مونتاج إعلاني لمنتج X"></div>
       <div class="frow">
@@ -516,7 +506,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
             <input type="checkbox" id="pv-manage_portfolio" value="manage_portfolio">
             <label for="pv-manage_portfolio">🎬 إدارة الأعمال</label>
           </div>
-          <div class="perm-item checked" onclick="togglePerm(this,'view_stats')">
+          <div class="perm-item" onclick="togglePerm(this,'view_stats')">
             <input type="checkbox" id="pv-view_stats" value="view_stats" checked>
             <label for="pv-view_stats">📊 الإحصائيات</label>
           </div>
@@ -537,27 +527,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 ══════════════════════════════════════════ */
 const SB_URL  = 'https://sdshemvqevcybvxsdmev.supabase.co';
 const SB_KEY  = 'sb_publishable_fqIU7FCtPJENbr20x_fC-w_EG6jndi3';
+// ← إيميل الـ Super Admin (أنت)
 const SUPER_ADMIN_EMAIL = 'fingrifureadg@gmail.com';
 
 const { createClient } = supabase;
 const sb = createClient(SB_URL, SB_KEY, {
-  auth:{
-    flowType:'implicit',
-    detectSessionInUrl:true,
-    persistSession:true,
-    autoRefreshToken:true
-  }
+  auth:{ flowType:'implicit', detectSessionInUrl:true, persistSession:true, autoRefreshToken:true }
 });
 
 /* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
-let ME = null;
-let ME_AUTH = null;
+let ME = null;          // current admin user object from admin_users table
+let ME_AUTH = null;     // supabase auth user
 let allOrders = [];
 let allUsers  = [];
 let allPorts  = [];
-let allAdmins = [];
 
 const PERMS_ALL = ['view_orders','update_orders','deliver_video','view_users','manage_portfolio','view_stats'];
 
@@ -581,13 +566,7 @@ async function loginWith(authUser) {
 
   // Check if Super Admin
   if (email === SUPER_ADMIN_EMAIL) {
-    ME = {
-      id: authUser.id,
-      email,
-      role:'super',
-      name: authUser.user_metadata?.full_name || 'Super Admin',
-      permissions: PERMS_ALL
-    };
+    ME = { email, role:'super', name: authUser.user_metadata?.full_name || 'Super Admin', permissions: PERMS_ALL };
   } else {
     // Check admin_users table
     const { data } = await sb.from('admin_users').select('*').eq('email', email).eq('active', true).single();
@@ -617,29 +596,20 @@ async function doLogin() {
   if (!email || !pass) { showLerr('أدخل الإيميل وكلمة المرور'); return; }
 
   const btn = document.getElementById('lbtn');
-  const txt = document.getElementById('lbtn-txt');
+  btn.textContent = 'جارٍ الدخول...';
   btn.disabled = true;
-  txt.innerHTML = '<span class="spin"></span> جارٍ الدخول...';
 
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
 
+  btn.textContent = 'دخول للوحة';
   btn.disabled = false;
-  txt.textContent = 'دخول للوحة';
 
-  if (error) {
-    const msgs = {
-      'Invalid login credentials': 'إيميل أو كلمة مرور خاطئة',
-      'Email not confirmed': 'يرجى تأكيد إيميلك أولاً'
-    };
-    showLerr(msgs[error.message] || error.message);
-    return;
-  }
+  if (error) { showLerr('إيميل أو كلمة مرور خاطئة'); return; }
 }
 
 function showLerr(msg) {
   const e = document.getElementById('lerr');
-  e.textContent = msg;
-  e.style.display = 'block';
+  e.textContent = msg; e.style.display = 'block';
   setTimeout(() => e.style.display = 'none', 4000);
 }
 
@@ -648,7 +618,7 @@ async function doLogout() {
 }
 
 /* ══════════════════════════════════════════
-   SIDEBAR BUILD
+   SIDEBAR BUILD (based on role/permissions)
 ══════════════════════════════════════════ */
 function buildSidebar() {
   const p = ME.permissions || [];
@@ -660,7 +630,7 @@ function buildSidebar() {
     nav += navItem('dashboard','📊','الرئيسية');
   }
   if (isSuper || p.includes('view_orders') || p.includes('update_orders')) {
-    nav += navItem('orders','📋','الطلبات');
+    nav += navItem('orders','📋','الطلبات','pending-n');
   }
   if (isSuper || p.includes('deliver_video')) {
     nav += navItem('delivery','📤','تسليم الفيديو');
@@ -686,9 +656,10 @@ function buildSidebar() {
     : `<div class="sb-role-chip chip-sub">🎬 ${ME.role==='editor'?'مونتير':'مشاهد'}</div>`;
 }
 
-function navItem(id, icon, label) {
+function navItem(id, icon, label, badgeId='') {
   return `<div class="sbn" id="nav-${id}" onclick="showPage('${id}')">
     <span class="sbn-icon">${icon}</span> ${label}
+    ${badgeId ? `<span class="sbn-badge" id="${badgeId}" style="display:none"></span>` : ''}
   </div>`;
 }
 
@@ -723,7 +694,7 @@ function showPage(name) {
 async function loadDashboard() {
   const [{ count:uCnt }, { data:orders }] = await Promise.all([
     sb.from('profiles').select('*',{count:'exact',head:true}),
-    sb.from('orders').select('*').order('created_at',{ascending:false}).limit(100)
+    sb.from('orders').select('*').order('created_at',{ascending:false})
   ]);
   const ords = orders || [];
   const pending = ords.filter(o=>o.status==='pending').length;
@@ -731,6 +702,9 @@ async function loadDashboard() {
   document.getElementById('s-orders').textContent  = ords.length;
   document.getElementById('s-pending').textContent = pending;
   document.getElementById('s-done').textContent    = ords.filter(o=>o.status==='completed').length;
+
+  const nb = document.getElementById('pending-n');
+  if (nb) { if(pending>0){nb.textContent=pending;nb.style.display='inline';}else nb.style.display='none'; }
 
   const body = document.getElementById('recent-body');
   const rec  = ords.slice(0,6);
@@ -771,11 +745,17 @@ const stMap = {
 
 function renderOrdersTable(list, mini) {
   const canEdit = ME.role==='super' || (ME.permissions||[]).includes('update_orders');
-  const rows = list.map(o => `<tr>
+  const rows = list.map(o => {
+    const fCount = (o.files||[]).length;
+    const filesCell = fCount > 0
+      ? `<button class="btn btn-info btn-sm" onclick='openFilesModal(${JSON.stringify(o).replace(/'/g,"&#39;")})'>📁 ${fCount} ملف</button>`
+      : `<span style="color:var(--muted);font-size:12px">—</span>`;
+    return `<tr>
     <td><span style="font-family:monospace;font-size:12px;color:var(--accent)">${o.order_id}</span></td>
     <td>${o.client_name||'—'}</td>
     <td>${o.package_name||'—'}</td>
     <td>${(o.package_price||0).toLocaleString('en-US')} د.ع</td>
+    <td>${filesCell}</td>
     <td>${stMap[o.status]||o.status}</td>
     <td style="color:var(--muted);font-size:11px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td>
     <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
@@ -787,10 +767,11 @@ function renderOrdersTable(list, mini) {
       <button class="btn btn-red btn-sm"  onclick="updOrd('${o.id}','cancelled')">❌</button>
       ` : ''}
     </div></td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
 
   return `<div style="overflow-x:auto"><table class="tbl">
-    <thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead>
+    <thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الملفات</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
 }
@@ -835,6 +816,7 @@ function openOrderModal(o) {
     ${o.details ? `<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">تفاصيل المونتاج</div><div style="font-size:13px;line-height:1.8">${o.details}</div></div>` : ''}
     ${o.ref_link ? `<div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">رابط مرجعي</div><a href="${o.ref_link}" target="_blank" style="color:var(--info);font-size:13px" dir="ltr">${o.ref_link}</a></div>` : ''}
     ${o.video_url ? `<div style="background:rgba(92,184,138,.06);border:1px solid rgba(92,184,138,.2);border-radius:12px;padding:12px;margin-bottom:12px;"><div style="font-size:12px;color:var(--success);font-weight:700;margin-bottom:6px;">🎬 الفيديو المسلّم</div><a href="${o.video_url}" target="_blank" style="color:var(--info);font-size:13px" dir="ltr">${o.video_url}</a>${o.video_note?`<div style="font-size:12px;color:var(--muted);margin-top:6px">${o.video_note}</div>`:''}</div>` : ''}
+    ${(o.files&&o.files.length) ? renderFilesSection(o.files) : ''}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
       <button class="btn btn-ok"   onclick="updOrd('${o.id}','completed');closeM('m-order')">✅ تأكيد</button>
       <button class="btn btn-info" onclick="updOrd('${o.id}','processing');closeM('m-order')">⚙️ بدأ التنفيذ</button>
@@ -931,6 +913,7 @@ function openPortfolioAdd() { openPortfolioModal(); }
 function editPortfolio(item) { openPortfolioModal(item); }
 
 function openPortfolioModal(item) {
+  document.getElementById('m-port-title').textContent = item ? 'تعديل عمل' : 'إضافة عمل جديد';
   document.getElementById('p-title').value    = item?.title||'';
   document.getElementById('p-cat').value      = item?.category||'commercial';
   document.getElementById('p-type').value     = item?.type||'youtube';
@@ -1097,24 +1080,24 @@ async function sendDelivery() {
 }
 
 /* ══════════════════════════════════════════
-   ADMINS MANAGEMENT
+   ADMINS MANAGEMENT (Super Only)
 ══════════════════════════════════════════ */
 async function loadAdmins() {
   document.getElementById('admins-body').innerHTML = loading();
   const { data } = await sb.from('admin_users').select('*').order('created_at',{ascending:false});
-  allAdmins = data || [];
+  const list = data || [];
 
-  if (!allAdmins.length) {
+  if (!list.length) {
     document.getElementById('admins-body').innerHTML = emptyState('🔑','لا يوجد مونتيرون بعد','أضف أول مونتير من الزر أعلاه');
     return;
   }
 
   const roleMap = { super:'Super Admin', editor:'مونتير', viewer:'مشاهد' };
-  const rows = allAdmins.map(a => {
+  const rows = list.map(a => {
     const perms = (a.permissions||[]).length;
     return `<tr>
       <td><div style="display:flex;align-items:center;gap:10px;">
-        <div class="av" style="background:linear-gradient(135deg,var(--accent),#b8954a);color:#fff">${(a.name||a.email||'?').charAt(0).toUpperCase()}</div>
+        <div class="av" style="background:linear-gradient(135deg,var(--info),#4a90d9);color:#fff">${(a.name||a.email||'?').charAt(0).toUpperCase()}</div>
         <div><div style="font-weight:600">${a.name||'—'}</div><div style="font-size:11px;color:var(--muted)" dir="ltr">${a.email}</div></div>
       </div></td>
       <td><span class="badge ${a.role==='editor'?'b-admin':'b-viewer'}">${roleMap[a.role]||a.role}</span></td>
@@ -1145,6 +1128,7 @@ function openAddAdmin() {
   document.getElementById('a-result').style.display = 'none';
   document.getElementById('a-save-btn').textContent = '✅ إنشاء الحساب';
 
+  // Reset permissions to defaults
   PERMS_ALL.forEach(p => {
     const cb = document.getElementById('pv-'+p);
     if (cb) {
@@ -1154,12 +1138,13 @@ function openAddAdmin() {
     }
   });
 
+  // Show password field
   document.getElementById('a-pass').closest('.fg').style.display = 'block';
   openM('m-admin');
 }
 
 function openEditAdmin(a) {
-  document.getElementById('m-admin-title').textContent = 'تعديل: ' + (a.name||a.email);
+  document.getElementById('m-admin-title').textContent = 'تعديل صلاحيات: ' + (a.name||a.email);
   document.getElementById('a-name').value  = a.name||'';
   document.getElementById('a-email').value = a.email||'';
   document.getElementById('a-role').value  = a.role||'editor';
@@ -1167,6 +1152,7 @@ function openEditAdmin(a) {
   document.getElementById('a-result').style.display = 'none';
   document.getElementById('a-save-btn').textContent = '💾 حفظ التعديلات';
 
+  // Hide password when editing
   document.getElementById('a-pass').closest('.fg').style.display = 'none';
 
   const perms = a.permissions || [];
@@ -1222,38 +1208,36 @@ async function saveAdmin() {
     // Create new auth account + insert to admin_users
     if (!pass || pass.length < 8) { toast('كلمة المرور 8 أحرف على الأقل','err'); btn.disabled=false; btn.textContent='✅ إنشاء الحساب'; return; }
 
+    // Step 1: Sign up new user (using service role ideally, but we use regular signup)
     const { data: signUpData, error: signUpErr } = await sb.auth.signUp({
       email, password: pass,
       options:{ data:{ full_name: name } }
     });
 
     if (signUpErr) {
-      btn.disabled = false;
-      btn.textContent = '✅ إنشاء الحساب';
-      const msgs = {'User already registered':'هذا الإيميل مسجل مسبقاً'};
-      toast(msgs[signUpErr.message] || signUpErr.message,'err');
-      return;
+      btn.disabled = false; btn.textContent = '✅ إنشاء الحساب';
+      toast('خطأ في الإنشاء: '+signUpErr.message,'err'); return;
     }
 
+    // Step 2: Insert to admin_users table
     const { error: dbErr } = await sb.from('admin_users').insert({
       email, name, role, permissions: perms,
       active: true, created_at: new Date().toISOString()
     });
 
-    btn.disabled = false;
-    btn.textContent = '✅ إنشاء الحساب';
+    btn.disabled = false; btn.textContent = '✅ إنشاء الحساب';
 
-    if (dbErr) { toast('خطأ: '+dbErr.message,'err'); return; }
+    if (dbErr) { toast('خطأ في الحفظ: '+dbErr.message,'err'); return; }
 
     result.innerHTML = `<div style="background:rgba(92,184,138,.1);border:1px solid rgba(92,184,138,.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--success);">
       ✅ تم إنشاء الحساب بنجاح!<br>
-      <span style="color:var(--muted);margin-top:6px;display:block;">الإيميل: <span dir="ltr" style="color:var(--text);font-weight:600">${email}</span></span>
-      <span style="color:var(--muted);display:block;">كلمة المرور: <span style="font-family:monospace;color:var(--text);font-weight:600">${pass}</span></span><br>
+      <span style="color:var(--muted);margin-top:4px;display:block;">الإيميل: <span dir="ltr" style="color:var(--text)">${email}</span></span>
+      <span style="color:var(--muted);">كلمة المرور: <span style="font-family:monospace;color:var(--text)">${pass}</span></span><br>
       <span style="font-size:11px;color:var(--warn);">⚠️ احفظ هذه البيانات — لن تُعرض مرة أخرى</span>
     </div>`;
     result.style.display = 'block';
     toast('✓ تم إنشاء حساب المونتير','ok');
-    setTimeout(() => { closeM('m-admin'); loadAdmins(); }, 2000);
+    loadAdmins();
   }
 }
 
@@ -1268,8 +1252,80 @@ async function deleteAdmin(id) {
   if (!confirm('حذف هذا المونتير نهائياً؟')) return;
   const { error } = await sb.from('admin_users').delete().eq('id',id);
   if (error) { toast('خطأ','err'); return; }
-  toast('✓ تم الحذف','ok');
-  loadAdmins();
+  toast('✓ تم الحذف','ok'); loadAdmins();
+}
+
+/* ══════════════════════════════════════════
+   FILES VIEWER
+══════════════════════════════════════════ */
+function renderFilesSection(files) {
+  if (!files || !files.length) return '';
+  // Group by episode
+  const byEp = {};
+  files.forEach(f => {
+    const ep = f.episode || 1;
+    if (!byEp[ep]) byEp[ep] = [];
+    byEp[ep].push(f);
+  });
+
+  const epHtml = Object.keys(byEp).sort((a,b)=>a-b).map(ep => {
+    const items = byEp[ep].map(f => {
+      const isVid = f.type === 'video';
+      const size = f.size < 1048576 ? (f.size/1024).toFixed(1)+' KB' : (f.size/1048576).toFixed(1)+' MB';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;">
+        <span style="font-size:18px">${isVid?'🎬':'🖼️'}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</div>
+          <div style="font-size:11px;color:var(--muted)">${size}</div>
+        </div>
+        <a href="${f.url}" target="_blank" class="btn btn-info btn-sm">⬇️ فتح</a>
+        ${isVid ? `<button class="btn btn-ghost btn-sm" onclick="previewMedia('${f.url}','video')">▶️</button>` : `<button class="btn btn-ghost btn-sm" onclick="previewMedia('${f.url}','image')">👁</button>`}
+      </div>`;
+    }).join('');
+    return `<div style="margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;">◆ الحلقة / الفيديو ${ep}</div>
+      ${items}
+    </div>`;
+  }).join('');
+
+  return `<div style="background:rgba(200,169,110,.04);border:1px solid rgba(200,169,110,.2);border-radius:12px;padding:14px;margin-bottom:12px;">
+    <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px;">📁 ملفات الزبون (${files.length} ملف)</div>
+    ${epHtml}
+  </div>`;
+}
+
+function openFilesModal(o) {
+  document.getElementById('m-order-title').textContent = `📁 ملفات طلب ${o.order_id}`;
+  const files = o.files || [];
+  if (!files.length) {
+    document.getElementById('m-order-body').innerHTML = emptyState('📭','لا توجد ملفات مرفوعة','الزبون لم يرفع ملفات بعد');
+  } else {
+    document.getElementById('m-order-body').innerHTML = renderFilesSection(files) + `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-info" onclick="openOrderModal(${JSON.stringify(o).replace(/'/g,'&#39;')})">👁 تفاصيل الطلب كاملة</button>
+        <button class="btn btn-ok" onclick="updOrd('${o.id}','processing');closeM('m-order')">⚙️ بدأ التنفيذ</button>
+      </div>`;
+  }
+  openM('m-order');
+}
+
+function previewMedia(url, type) {
+  const old = document.getElementById('media-preview-modal');
+  if (old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = 'media-preview-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = type === 'video'
+    ? `<div style="width:100%;max-width:800px;position:relative;">
+        <video src="${url}" controls autoplay style="width:100%;border-radius:12px;background:#000;max-height:80vh;"></video>
+        <button onclick="this.closest('#media-preview-modal').remove()" style="position:absolute;top:-40px;left:0;background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;">✕ إغلاق</button>
+      </div>`
+    : `<div style="position:relative;text-align:center;">
+        <img src="${url}" style="max-width:90vw;max-height:85vh;border-radius:12px;object-fit:contain;">
+        <button onclick="this.closest('#media-preview-modal').remove()" style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;">✕ إغلاق</button>
+      </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
 }
 
 /* ══════════════════════════════════════════
@@ -1284,15 +1340,10 @@ document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click',e
 ══════════════════════════════════════════ */
 function toast(msg, type='ok') {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show '+type;
+  t.textContent = msg; t.className = 'show '+type;
   setTimeout(()=>t.className='', 3200);
 }
-
-function loading() {
-  return '<div style="text-align:center;padding:40px"><div class="spin"></div></div>';
-}
-
+function loading() { return '<div style="text-align:center;padding:40px"><div class="spin"></div></div>'; }
 function emptyState(ico,txt,sub='') {
   return `<div class="empty"><div class="empty-ico">${ico}</div><div class="empty-txt">${txt}</div>${sub?`<div style="font-size:12px;margin-top:4px;opacity:.6">${sub}</div>`:''}</div>`;
 }
