@@ -1597,57 +1597,49 @@ async function closeConv() {
 /* ══════════════════════════════════════════
    MESSAGES / CONVERSATIONS
 ══════════════════════════════════════════ */
-let _activeConvId = null;
-let _msgPoll = null;
-let _lastMsgCount = 0;
-let _allConvs = [];
+let _convId = null;
+let _convPoll = null;
+let _convMsgCount = 0;
+let _convList = [];
 
 async function loadConversations() {
-  const listEl = document.getElementById('conv-list');
-  if (!listEl) return;
-  listEl.innerHTML = loading();
+  const el = document.getElementById('conv-list');
+  if (!el) return;
+  el.innerHTML = loading();
 
-  const { data: convs, error } = await sb.from('conversations')
-    .select('*').order('updated_at',{ascending:false});
+  const { data, error } = await sb.from('conversations')
+    .select('*').order('updated_at', { ascending: false });
 
   if (error) {
-    console.error('loadConversations error:', error.message);
-    listEl.innerHTML = emptyState('⚠️', 'خطأ في التحميل', error.message);
-    return;
-  }
-  _allConvs = convs || [];
-
-  if (!_allConvs.length) {
-    listEl.innerHTML = emptyState('💬','لا توجد محادثات بعد');
+    el.innerHTML = emptyState('⚠️', 'خطأ: ' + error.message);
     return;
   }
 
-  // عدّ الغير مقروء
-  const { data: unread } = await sb.from('messages')
-    .select('conversation_id').eq('sender','user').is('read_at',null);
-  const unreadMap = {};
-  (unread||[]).forEach(r => { unreadMap[r.conversation_id] = (unreadMap[r.conversation_id]||0)+1; });
-
-  const totalUnread = Object.values(unreadMap).reduce((a,b)=>a+b, 0);
-  const countBadge = document.getElementById('conv-unread-count');
-  if (countBadge) {
-    if (totalUnread > 0) { countBadge.textContent = totalUnread+' جديد'; countBadge.style.display='inline'; }
-    else countBadge.style.display = 'none';
+  _convList = data || [];
+  if (!_convList.length) {
+    el.innerHTML = emptyState('💬', 'لا توجد محادثات بعد');
+    return;
   }
 
-  listEl.innerHTML = _allConvs.map(c => {
-    const u = unreadMap[c.id]||0;
-    const time = new Date(c.updated_at||c.created_at).toLocaleDateString('ar-IQ');
-    const isActive = c.id === _activeConvId;
+  el.innerHTML = _convList.map(c => {
     const name = c.user_name || c.user_email?.split('@')[0] || 'زبون';
-    const hasPkg = c.last_pkg_name;
-    return `<div onclick="openConv('${c.id}')" style="padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s;background:${isActive?'rgba(200,169,110,.08)':'transparent'};">
+    const active = c.id === _convId;
+    const time = new Date(c.updated_at || c.created_at).toLocaleDateString('ar-IQ');
+    const pkg = c.last_pkg_name
+      ? `<div style="font-size:10px;color:var(--accent)">📦 ${c.last_pkg_name}</div>`
+      : '<div style="font-size:10px;color:var(--muted)">لم يشترِ بعد</div>';
+    return `<div onclick="openConv('${c.id}')"
+      style="padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--border);
+      background:${active ? 'rgba(200,169,110,.08)' : 'transparent'};transition:background .2s;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6ab4e8,#4a90d9);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;">${name.charAt(0).toUpperCase()}</div>
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6ab4e8,#4a90d9);
+          display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;">
+          ${name.charAt(0).toUpperCase()}
+        </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}${u?` <span style="background:var(--danger);color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;font-weight:700;vertical-align:middle;">${u}</span>`:''}</div>
-          ${hasPkg?`<div style="font-size:10px;color:var(--accent);font-weight:500;">📦 ${c.last_pkg_name}</div>`:'<div style="font-size:10px;color:var(--muted);">لم يشترِ بعد</div>'}
-          ${c.last_msg?`<div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;">${c.last_msg}</div>`:''}
+          <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>
+          ${pkg}
+          ${c.last_msg ? `<div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.last_msg}</div>` : ''}
         </div>
         <div style="font-size:10px;color:var(--muted);flex-shrink:0;">${time}</div>
       </div>
@@ -1656,8 +1648,9 @@ async function loadConversations() {
 }
 
 async function openConv(convId) {
-  _activeConvId = convId;
-  const conv = _allConvs.find(c=>c.id===convId);
+  _convId = convId;
+  _convMsgCount = 0;
+  const conv = _convList.find(c => c.id === convId);
   if (!conv) return;
 
   // إظهار panel
@@ -1665,116 +1658,103 @@ async function openConv(convId) {
   const panel = document.getElementById('chat-panel');
   panel.style.display = 'flex';
 
-  // معلومات الزبون
   const name = conv.user_name || conv.user_email?.split('@')[0] || '—';
   document.getElementById('cp-av').textContent = name.charAt(0).toUpperCase();
   document.getElementById('cp-name').textContent = name;
   document.getElementById('cp-info').innerHTML = [
     conv.user_email ? `<span>✉️ ${conv.user_email}</span>` : '',
-    conv.user_phone ? `<span>📱 ${conv.user_phone}</span>` : '',
-    conv.status === 'open'
-      ? '<span style="color:var(--success)">🟢 مفتوحة</span>'
-      : '<span style="color:var(--muted)">⏸ مغلقة</span>'
-  ].filter(Boolean).join('');
+    conv.user_phone ? `<span>📱 ${conv.user_phone}</span>` : ''
+  ].filter(Boolean).join(' | ');
 
-  // بطاقة معلومات إضافية
-  const userCard = document.getElementById('cp-user-card');
-  const infoParts = [];
-  if (conv.last_order_id) infoParts.push(`<span>🧾 <b>${conv.last_order_id}</b></span>`);
-  if (conv.last_pkg_name) infoParts.push(`<span>📦 ${conv.last_pkg_name} — ${(conv.last_pkg_price||0).toLocaleString('en-US')} د.ع</span>`);
-  else infoParts.push('<span style="color:var(--muted)">📦 لم يشترِ باقة بعد</span>');
+  // بطاقة معلومات الزبون
+  const uc = document.getElementById('cp-user-card');
+  const parts = [];
+  if (conv.last_order_id) parts.push(`🧾 <b>${conv.last_order_id}</b>`);
+  if (conv.last_pkg_name) parts.push(`📦 ${conv.last_pkg_name} — ${(conv.last_pkg_price||0).toLocaleString('en-US')} د.ع`);
+  else parts.push('<span style="color:var(--muted)">📦 لم يشترِ باقة بعد</span>');
   if (conv.last_order_status) {
-    const stMap = {pending:'⏳ قيد المراجعة',processing:'⚙️ جارٍ التنفيذ',completed:'✅ مكتمل',cancelled:'❌ ملغي',revision:'✏️ تعديل'};
-    infoParts.push(`<span>${stMap[conv.last_order_status]||conv.last_order_status}</span>`);
+    const st = {pending:'⏳ قيد المراجعة',processing:'⚙️ جارٍ',completed:'✅ مكتمل',cancelled:'❌ ملغي'};
+    parts.push(st[conv.last_order_status] || conv.last_order_status);
   }
-  userCard.innerHTML = infoParts.join(' &nbsp;|&nbsp; ');
+  uc.innerHTML = parts.join(' &nbsp;|&nbsp; ');
 
-  // تحميل الرسائل
-  await loadConvMsgs(convId);
+  await _convLoadMsgs();
 
-  // تأشير كقروء
-  await sb.from('messages').update({read_at:new Date().toISOString()})
-    .eq('conversation_id',convId).eq('sender','user').is('read_at',null);
+  // polling
+  if (_convPoll) clearInterval(_convPoll);
+  _convPoll = setInterval(_convLoadMsgs, 4000);
 
   // تحديث القائمة
   loadConversations();
-
-  // polling
-  if (_msgPoll) clearInterval(_msgPoll);
-  _msgPoll = setInterval(() => loadConvMsgs(convId), 4000);
 }
 
-async function loadConvMsgs(convId) {
-  const { data: msgs } = await sb.from('messages')
-    .select('*').eq('conversation_id',convId).order('created_at',{ascending:true});
+async function _convLoadMsgs() {
+  if (!_convId) return;
+  const { data: msgs, error } = await sb.from('messages')
+    .select('*').eq('conversation_id', _convId)
+    .order('created_at', { ascending: true });
 
-  const msgsEl = document.getElementById('cp-msgs');
-  if (!msgs||!msgs.length) {
-    msgsEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)">لا رسائل بعد</div>';
-    _lastMsgCount = 0;
-    return;
-  }
+  if (error) { console.error('msgs error:', error.message); return; }
+  if (!msgs || msgs.length === _convMsgCount) return;
+  _convMsgCount = msgs.length;
 
-  if (msgs.length === _lastMsgCount) return; // لا جديد
-  _lastMsgCount = msgs.length;
-
-  const wasBottom = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight < 80;
-  msgsEl.innerHTML = msgs.map(m => {
-    const isAdmin = m.sender === 'admin';
-    const t = new Date(m.created_at).toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
-    return `<div style="display:flex;justify-content:${isAdmin?'flex-end':'flex-start'};">
-      <div style="max-width:76%;padding:9px 13px;border-radius:${isAdmin?'13px 4px 13px 13px':'4px 13px 13px 13px'};
-        font-size:13px;line-height:1.65;
-        background:${isAdmin?'linear-gradient(135deg,var(--accent),#b8954a)':'rgba(255,255,255,.07)'};
-        color:${isAdmin?'#0a0a0f':'var(--text)'};
-        border:${isAdmin?'none':'1px solid var(--border)'};">
+  const el = document.getElementById('cp-msgs');
+  const wasBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  el.innerHTML = msgs.map(m => {
+    const admin = m.sender === 'admin';
+    const t = new Date(m.created_at).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' });
+    return `<div style="display:flex;justify-content:${admin ? 'flex-end' : 'flex-start'};">
+      <div style="max-width:76%;padding:9px 13px;font-size:13px;line-height:1.65;
+        border-radius:${admin ? '13px 4px 13px 13px' : '4px 13px 13px 13px'};
+        background:${admin ? 'linear-gradient(135deg,var(--accent),#b8954a)' : 'rgba(255,255,255,.07)'};
+        color:${admin ? '#0a0a0f' : 'var(--text)'};
+        border:${admin ? 'none' : '1px solid var(--border)'};">
         ${m.content}
         <div style="font-size:9px;opacity:.5;margin-top:3px;">${t}</div>
       </div>
     </div>`;
   }).join('');
 
-  if (wasBottom || msgs.length <= 3) msgsEl.scrollTop = msgsEl.scrollHeight;
+  if (wasBottom || msgs.length <= 3) el.scrollTop = el.scrollHeight;
 }
 
 async function adminSendMsg() {
-  if (!_activeConvId) return;
+  if (!_convId) return;
   const inp = document.getElementById('admin-reply');
-  const text = inp.value.trim();
-  if (!text) return;
+  const txt = inp.value.trim();
+  if (!txt) return;
 
   inp.value = '';
   inp.style.height = 'auto';
 
   const { error } = await sb.from('messages').insert({
-    conversation_id: _activeConvId,
+    conversation_id: _convId,
     sender: 'admin',
-    content: text,
-    created_at: new Date().toISOString()
+    content: txt
   });
 
-  if (error) { toast('خطأ في الإرسال: '+error.message,'err'); return; }
+  if (error) { toast('خطأ: ' + error.message, 'err'); return; }
 
   await sb.from('conversations').update({
-    updated_at: new Date().toISOString(),
-    last_msg: text.slice(0,80)
-  }).eq('id',_activeConvId);
+    last_msg: txt.slice(0, 80),
+    updated_at: new Date().toISOString()
+  }).eq('id', _convId);
 
-  _lastMsgCount = 0; // إعادة تحميل كامل
-  await loadConvMsgs(_activeConvId);
+  _convMsgCount = 0;
+  await _convLoadMsgs();
   loadConversations();
-  toast('✓ تم الإرسال','ok');
+  toast('✓ تم الإرسال', 'ok');
 }
 
 async function closeChat() {
-  if (!_activeConvId) return;
-  await sb.from('conversations').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',_activeConvId);
-  _activeConvId = null;
-  _lastMsgCount = 0;
-  if (_msgPoll) { clearInterval(_msgPoll); _msgPoll=null; }
+  if (!_convId) return;
+  await sb.from('conversations').update({ status: 'closed', updated_at: new Date().toISOString() }).eq('id', _convId);
+  _convId = null;
+  _convMsgCount = 0;
+  if (_convPoll) { clearInterval(_convPoll); _convPoll = null; }
   document.getElementById('chat-placeholder').style.display = 'flex';
   document.getElementById('chat-panel').style.display = 'none';
-  toast('✓ تم إغلاق المحادثة','ok');
+  toast('✓ تم إغلاق المحادثة', 'ok');
   loadConversations();
 }
 
