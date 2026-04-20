@@ -1607,8 +1607,14 @@ async function loadConversations() {
   if (!listEl) return;
   listEl.innerHTML = loading();
 
-  const { data: convs } = await sb.from('conversations')
+  const { data: convs, error } = await sb.from('conversations')
     .select('*').order('updated_at',{ascending:false});
+
+  if (error) {
+    console.error('loadConversations error:', error.message);
+    listEl.innerHTML = emptyState('⚠️', 'خطأ في التحميل', error.message);
+    return;
+  }
   _allConvs = convs || [];
 
   if (!_allConvs.length) {
