@@ -431,6 +431,62 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
       </div>
     </div>
 
+    <!-- ── MESSAGES ── -->
+    <div class="page" id="page-messages">
+      <div class="pg-head">
+        <div><div class="pg-title">💬 الرسائل</div><div class="pg-sub">تواصل مع الزبائن والرد عليهم مباشرة</div></div>
+        <button class="btn btn-ghost" onclick="loadConversations()">🔄 تحديث</button>
+      </div>
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 148px);">
+
+        <!-- قائمة المحادثات -->
+        <div class="card" style="margin:0;overflow:hidden;display:flex;flex-direction:column;">
+          <div class="card-head" style="padding:12px 16px;">
+            <div class="card-title">المحادثات</div>
+            <span id="conv-unread-count" style="background:var(--danger);color:#fff;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;display:none;"></span>
+          </div>
+          <div style="flex:1;overflow-y:auto;" id="conv-list">
+            <div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin"></div></div>
+          </div>
+        </div>
+
+        <!-- منطقة الدردشة -->
+        <div class="card" style="margin:0;overflow:hidden;display:flex;flex-direction:column;">
+          <div id="chat-placeholder" style="display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:12px;color:var(--muted);">
+            <div style="font-size:48px;opacity:.3">💬</div>
+            <div style="font-size:14px">اختر محادثة من القائمة</div>
+          </div>
+          <div id="chat-panel" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+            <!-- رأس المحادثة -->
+            <div class="card-head" style="padding:12px 18px;" id="chat-panel-head">
+              <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+                <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6ab4e8,#4a90d9);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;" id="cp-av">Z</div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:14px;font-weight:700;" id="cp-name">—</div>
+                  <div style="font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;" id="cp-info">—</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;flex-shrink:0;">
+                <button class="btn btn-ghost btn-sm" onclick="closeChat()">✓ أغلق</button>
+              </div>
+            </div>
+            <!-- معلومات الزبون -->
+            <div id="cp-user-card" style="padding:10px 18px;background:rgba(200,169,110,.04);border-bottom:1px solid var(--border);font-size:12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;"></div>
+            <!-- الرسائل -->
+            <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;" id="cp-msgs"></div>
+            <!-- إرسال -->
+            <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;">
+              <textarea id="admin-reply" style="flex:1;background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13px;resize:none;max-height:90px;min-height:38px;direction:rtl;transition:border-color .2s;" placeholder="اكتب ردك على الزبون..."
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();adminSendMsg();}"
+                oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+              <button class="btn btn-gold" onclick="adminSendMsg()" style="height:38px;padding:0 16px;">إرسال ➤</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ── ADMINS (Super only) ── -->
     <div class="page" id="page-admins">
       <div class="pg-head">
@@ -696,6 +752,7 @@ function buildSidebar() {
     nav += navItem('portfolio','🎬','أعمالي');
   }
   nav += navItem('messages','💬','الرسائل');
+  nav += navItem('messages','💬','الرسائل');
   if (isSuper) {
     nav += '<div class="sb-sep"></div>';
     nav += navItem('admins','🔑','إدارة الأدمنيه');
@@ -740,6 +797,7 @@ function showPage(name) {
   if (name==='portfolio') loadPortfolio();
   if (name==='delivery')  loadDelivery();
   if (name==='admins')    loadAdmins();
+  if (name==='messages')  loadConversations();
   if (name==='messages')  loadMessages();
 }
 
@@ -1535,6 +1593,184 @@ async function closeConv() {
   await sb.from('conversations').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',activeConvId);
   toast('✓ تم إغلاق المحادثة','ok');
   loadMessages();
+}
+
+/* ══════════════════════════════════════════
+   MESSAGES / CONVERSATIONS
+══════════════════════════════════════════ */
+let _activeConvId = null;
+let _msgPoll = null;
+let _lastMsgCount = 0;
+let _allConvs = [];
+
+async function loadConversations() {
+  const listEl = document.getElementById('conv-list');
+  if (!listEl) return;
+  listEl.innerHTML = loading();
+
+  const { data: convs } = await sb.from('conversations')
+    .select('*').order('updated_at',{ascending:false});
+  _allConvs = convs || [];
+
+  if (!_allConvs.length) {
+    listEl.innerHTML = emptyState('💬','لا توجد محادثات بعد');
+    return;
+  }
+
+  // عدّ الغير مقروء
+  const { data: unread } = await sb.from('messages')
+    .select('conversation_id').eq('sender','user').is('read_at',null);
+  const unreadMap = {};
+  (unread||[]).forEach(r => { unreadMap[r.conversation_id] = (unreadMap[r.conversation_id]||0)+1; });
+
+  const totalUnread = Object.values(unreadMap).reduce((a,b)=>a+b, 0);
+  const countBadge = document.getElementById('conv-unread-count');
+  if (countBadge) {
+    if (totalUnread > 0) { countBadge.textContent = totalUnread+' جديد'; countBadge.style.display='inline'; }
+    else countBadge.style.display = 'none';
+  }
+
+  listEl.innerHTML = _allConvs.map(c => {
+    const u = unreadMap[c.id]||0;
+    const time = new Date(c.updated_at||c.created_at).toLocaleDateString('ar-IQ');
+    const isActive = c.id === _activeConvId;
+    const name = c.user_name || c.user_email?.split('@')[0] || 'زبون';
+    const hasPkg = c.last_pkg_name;
+    return `<div onclick="openConv('${c.id}')" style="padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s;background:${isActive?'rgba(200,169,110,.08)':'transparent'};">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6ab4e8,#4a90d9);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;">${name.charAt(0).toUpperCase()}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}${u?` <span style="background:var(--danger);color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;font-weight:700;vertical-align:middle;">${u}</span>`:''}</div>
+          ${hasPkg?`<div style="font-size:10px;color:var(--accent);font-weight:500;">📦 ${c.last_pkg_name}</div>`:'<div style="font-size:10px;color:var(--muted);">لم يشترِ بعد</div>'}
+          ${c.last_msg?`<div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;">${c.last_msg}</div>`:''}
+        </div>
+        <div style="font-size:10px;color:var(--muted);flex-shrink:0;">${time}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function openConv(convId) {
+  _activeConvId = convId;
+  const conv = _allConvs.find(c=>c.id===convId);
+  if (!conv) return;
+
+  // إظهار panel
+  document.getElementById('chat-placeholder').style.display = 'none';
+  const panel = document.getElementById('chat-panel');
+  panel.style.display = 'flex';
+
+  // معلومات الزبون
+  const name = conv.user_name || conv.user_email?.split('@')[0] || '—';
+  document.getElementById('cp-av').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('cp-name').textContent = name;
+  document.getElementById('cp-info').innerHTML = [
+    conv.user_email ? `<span>✉️ ${conv.user_email}</span>` : '',
+    conv.user_phone ? `<span>📱 ${conv.user_phone}</span>` : '',
+    conv.status === 'open'
+      ? '<span style="color:var(--success)">🟢 مفتوحة</span>'
+      : '<span style="color:var(--muted)">⏸ مغلقة</span>'
+  ].filter(Boolean).join('');
+
+  // بطاقة معلومات إضافية
+  const userCard = document.getElementById('cp-user-card');
+  const infoParts = [];
+  if (conv.last_order_id) infoParts.push(`<span>🧾 <b>${conv.last_order_id}</b></span>`);
+  if (conv.last_pkg_name) infoParts.push(`<span>📦 ${conv.last_pkg_name} — ${(conv.last_pkg_price||0).toLocaleString('en-US')} د.ع</span>`);
+  else infoParts.push('<span style="color:var(--muted)">📦 لم يشترِ باقة بعد</span>');
+  if (conv.last_order_status) {
+    const stMap = {pending:'⏳ قيد المراجعة',processing:'⚙️ جارٍ التنفيذ',completed:'✅ مكتمل',cancelled:'❌ ملغي',revision:'✏️ تعديل'};
+    infoParts.push(`<span>${stMap[conv.last_order_status]||conv.last_order_status}</span>`);
+  }
+  userCard.innerHTML = infoParts.join(' &nbsp;|&nbsp; ');
+
+  // تحميل الرسائل
+  await loadConvMsgs(convId);
+
+  // تأشير كقروء
+  await sb.from('messages').update({read_at:new Date().toISOString()})
+    .eq('conversation_id',convId).eq('sender','user').is('read_at',null);
+
+  // تحديث القائمة
+  loadConversations();
+
+  // polling
+  if (_msgPoll) clearInterval(_msgPoll);
+  _msgPoll = setInterval(() => loadConvMsgs(convId), 4000);
+}
+
+async function loadConvMsgs(convId) {
+  const { data: msgs } = await sb.from('messages')
+    .select('*').eq('conversation_id',convId).order('created_at',{ascending:true});
+
+  const msgsEl = document.getElementById('cp-msgs');
+  if (!msgs||!msgs.length) {
+    msgsEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)">لا رسائل بعد</div>';
+    _lastMsgCount = 0;
+    return;
+  }
+
+  if (msgs.length === _lastMsgCount) return; // لا جديد
+  _lastMsgCount = msgs.length;
+
+  const wasBottom = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight < 80;
+  msgsEl.innerHTML = msgs.map(m => {
+    const isAdmin = m.sender === 'admin';
+    const t = new Date(m.created_at).toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
+    return `<div style="display:flex;justify-content:${isAdmin?'flex-end':'flex-start'};">
+      <div style="max-width:76%;padding:9px 13px;border-radius:${isAdmin?'13px 4px 13px 13px':'4px 13px 13px 13px'};
+        font-size:13px;line-height:1.65;
+        background:${isAdmin?'linear-gradient(135deg,var(--accent),#b8954a)':'rgba(255,255,255,.07)'};
+        color:${isAdmin?'#0a0a0f':'var(--text)'};
+        border:${isAdmin?'none':'1px solid var(--border)'};">
+        ${m.content}
+        <div style="font-size:9px;opacity:.5;margin-top:3px;">${t}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  if (wasBottom || msgs.length <= 3) msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+async function adminSendMsg() {
+  if (!_activeConvId) return;
+  const inp = document.getElementById('admin-reply');
+  const text = inp.value.trim();
+  if (!text) return;
+
+  inp.value = '';
+  inp.style.height = 'auto';
+
+  const { error } = await sb.from('messages').insert({
+    conversation_id: _activeConvId,
+    sender: 'admin',
+    content: text,
+    created_at: new Date().toISOString()
+  });
+
+  if (error) { toast('خطأ في الإرسال: '+error.message,'err'); return; }
+
+  await sb.from('conversations').update({
+    updated_at: new Date().toISOString(),
+    last_msg: text.slice(0,80)
+  }).eq('id',_activeConvId);
+
+  _lastMsgCount = 0; // إعادة تحميل كامل
+  await loadConvMsgs(_activeConvId);
+  loadConversations();
+  toast('✓ تم الإرسال','ok');
+}
+
+async function closeChat() {
+  if (!_activeConvId) return;
+  await sb.from('conversations').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',_activeConvId);
+  _activeConvId = null;
+  _lastMsgCount = 0;
+  if (_msgPoll) { clearInterval(_msgPoll); _msgPoll=null; }
+  document.getElementById('chat-placeholder').style.display = 'flex';
+  document.getElementById('chat-panel').style.display = 'none';
+  toast('✓ تم إغلاق المحادثة','ok');
+  loadConversations();
 }
 
 /* ══════════════════════════════════════════
