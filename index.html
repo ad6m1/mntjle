@@ -1511,7 +1511,7 @@ async function openConv(convId) {
 
   // polling
   if (_convPoll) clearInterval(_convPoll);
-  _convPoll = setInterval(_convLoadMsgs, 4000);
+  _convPoll = setInterval(_convLoadMsgs, 3000);
 
   // تحديث القائمة
   loadConversations();
@@ -1591,6 +1591,11 @@ async function closeChat() {
    BOOT
 ══════════════════════════════════════════ */
 init();
+// تحديث قائمة المحادثات كل 8 ثواني تلقائياً
+setInterval(() => {
+  const page = document.getElementById('page-messages');
+  if (page && page.style.display !== 'none') loadConversations();
+}, 8000);
 </script>
 </body>
 </html>
