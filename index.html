@@ -357,22 +357,60 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
           <div id="del-order-info" style="display:none;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;">
             <div id="del-order-details" style="font-size:13px;"></div>
           </div>
-          <div class="fg">
-            <label class="flabel">رابط الفيديو المنتج</label>
-            <input class="finput ltr" type="url" id="del-url" placeholder="https://drive.google.com/...">
+          <!-- ══ اختيار طريقة الإرسال ══ -->
+          <div style="display:flex;gap:8px;margin-bottom:18px;">
+            <button id="del-tab-drive" onclick="delSwitchTab('drive')"
+              style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--accent);background:var(--gold-glow);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;">
+              🔗 Google Drive
+            </button>
+            <button id="del-tab-upload" onclick="delSwitchTab('upload')"
+              style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:none;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">
+              📁 رفع مباشر
+            </button>
           </div>
-          <div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:10px;">أو</div>
-          <div class="fg">
-            <label class="flabel">رفع ملف فيديو مباشرة (حتى 100 MB)</label>
-            <div class="drop-zone" id="del-drop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="handleDelDrop(event)">
-              <input type="file" accept="video/*" id="del-file" onchange="uploadDelFile(this)">
-              <div style="font-size:28px;margin-bottom:8px">🎬</div>
-              <div style="font-size:13px;color:var(--muted)">اسحب الفيديو هنا أو اضغط للاختيار</div>
-              <div style="font-size:11px;color:var(--border);margin-top:4px">MP4, MOV, AVI, MKV</div>
+
+          <!-- ══ تبويب Google Drive ══ -->
+          <div id="del-panel-drive">
+            <div class="fg">
+              <label class="flabel">رابط Google Drive</label>
+              <input class="finput ltr" type="url" id="del-url"
+                placeholder="https://drive.google.com/file/d/..."
+                oninput="delPreviewDrive(this.value)">
             </div>
-            <div class="prog-wrap" id="del-prog">
-              <div class="prog-bar"><div class="prog-fill" id="del-prog-fill"></div></div>
-              <div class="prog-txt" id="del-prog-txt">0%</div>
+            <!-- تعليمات Google Drive -->
+            <div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.9;margin-bottom:4px;">
+              <div style="font-weight:700;color:var(--accent);margin-bottom:6px;">📋 خطوات مشاركة فيديو من Google Drive:</div>
+              <div>١ — ارفع الفيديو على <a href="https://drive.google.com" target="_blank" style="color:var(--accent)">Google Drive</a></div>
+              <div>٢ — كليك يمين على الفيديو ← <b>Share</b> ← <b>Anyone with the link</b></div>
+              <div>٣ — اضغط <b>Copy link</b> والصقه هنا</div>
+              <div style="margin-top:6px;color:var(--muted);">💡 يدعم أي حجم فيديو بدون قيود</div>
+            </div>
+            <!-- معاينة الرابط -->
+            <div id="del-drive-preview" style="display:none;margin-top:8px;padding:10px 14px;background:rgba(92,184,138,.07);border:1px solid rgba(92,184,138,.25);border-radius:8px;font-size:12px;color:var(--success);">
+              ✓ رابط Google Drive صحيح
+            </div>
+          </div>
+
+          <!-- ══ تبويب رفع مباشر ══ -->
+          <div id="del-panel-upload" style="display:none;">
+            <div class="fg">
+              <label class="flabel">رفع ملف فيديو مباشرة <span style="color:var(--muted);font-weight:400;">(حتى 45 MB)</span></label>
+              <div class="drop-zone" id="del-drop"
+                ondragover="event.preventDefault();this.classList.add('over')"
+                ondragleave="this.classList.remove('over')"
+                ondrop="handleDelDrop(event)">
+                <input type="file" accept="video/mp4,video/quicktime,video/x-msvideo,video/webm" id="del-file" onchange="uploadDelFile(this)">
+                <div style="font-size:28px;margin-bottom:8px">🎬</div>
+                <div style="font-size:13px;color:var(--muted)">اسحب الفيديو هنا أو اضغط للاختيار</div>
+                <div style="font-size:11px;color:var(--border);margin-top:4px">MP4, MOV, AVI, WEBM — حتى 45MB</div>
+              </div>
+              <div class="prog-wrap" id="del-prog">
+                <div class="prog-bar"><div class="prog-fill" id="del-prog-fill"></div></div>
+                <div class="prog-txt" id="del-prog-txt">0%</div>
+              </div>
+              <div style="margin-top:8px;padding:8px 12px;background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-radius:8px;font-size:11px;color:var(--muted);">
+                ⚠️ للفيديوهات أكبر من 45MB — استخدم Google Drive
+              </div>
             </div>
           </div>
           <div class="fg">
@@ -894,7 +932,19 @@ function openOrderModal(o) {
     </div>
     ${o.details ? `<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">تفاصيل المونتاج</div><div style="font-size:13px;line-height:1.8">${o.details}</div></div>` : ''}
     ${o.ref_link ? `<div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">رابط مرجعي</div><a href="${o.ref_link}" target="_blank" style="color:var(--info);font-size:13px" dir="ltr">${o.ref_link}</a></div>` : ''}
-    ${o.video_url ? `<div style="background:rgba(92,184,138,.06);border:1px solid rgba(92,184,138,.2);border-radius:12px;padding:12px;margin-bottom:12px;"><div style="font-size:12px;color:var(--success);font-weight:700;margin-bottom:6px;">🎬 الفيديو المسلّم</div><a href="${o.video_url}" target="_blank" style="color:var(--info);font-size:13px" dir="ltr">${o.video_url}</a>${o.video_note?`<div style="font-size:12px;color:var(--muted);margin-top:6px">${o.video_note}</div>`:''}</div>` : ''}
+    ${o.video_url ? `<div style="background:rgba(92,184,138,.06);border:1px solid rgba(92,184,138,.2);border-radius:12px;padding:12px;margin-bottom:12px;">
+              <div style="font-size:12px;color:var(--success);font-weight:700;margin-bottom:8px;">🎬 الفيديو المسلّم</div>
+              ${o.video_url.includes('drive.google.com') || o.video_url.includes('docs.google.com') ? `
+                <a href="${o.video_url}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;">
+                  <span style="font-size:18px;">🔗</span> فتح من Google Drive
+                </a>
+              ` : `
+                <a href="${o.video_url}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;">
+                  <span style="font-size:18px;">📥</span> تحميل الفيديو
+                </a>
+              `}
+              ${o.video_note?`<div style="font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">${o.video_note}</div>`:''}
+            </div>` : ''}
     ${(o.files&&o.files.length) ? renderFilesSection(o.files) : ''}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
       <button class="btn btn-ok"   onclick="updOrd('${o.id}','completed');closeM('m-order')">✅ تأكيد</button>
@@ -1141,6 +1191,48 @@ async function uploadDelFile(input) {
   document.getElementById('del-url').value = publicUrl;
   fill.style.width='100%'; fill.style.background='var(--success)'; txt.textContent='✓ تم — الرابط جاهز';
   toast('✓ تم رفع الفيديو','ok');
+}
+
+// ══ تبديل تبويبات تسليم الفيديو ══
+let _delTab = 'drive'; // الافتراضي
+
+function delSwitchTab(tab) {
+  _delTab = tab;
+  const drive  = document.getElementById('del-panel-drive');
+  const upload = document.getElementById('del-panel-upload');
+  const btnD   = document.getElementById('del-tab-drive');
+  const btnU   = document.getElementById('del-tab-upload');
+
+  if (tab === 'drive') {
+    drive.style.display  = 'block';
+    upload.style.display = 'none';
+    btnD.style.borderColor = 'var(--accent)';
+    btnD.style.background  = 'var(--gold-glow)';
+    btnD.style.color       = 'var(--accent)';
+    btnU.style.borderColor = 'var(--border)';
+    btnU.style.background  = 'none';
+    btnU.style.color       = 'var(--muted)';
+  } else {
+    drive.style.display  = 'none';
+    upload.style.display = 'block';
+    btnU.style.borderColor = 'var(--accent)';
+    btnU.style.background  = 'var(--gold-glow)';
+    btnU.style.color       = 'var(--accent)';
+    btnD.style.borderColor = 'var(--border)';
+    btnD.style.background  = 'none';
+    btnD.style.color       = 'var(--muted)';
+  }
+}
+
+function delPreviewDrive(url) {
+  const preview = document.getElementById('del-drive-preview');
+  if (!preview) return;
+  const isDrive = url.includes('drive.google.com') || url.includes('docs.google.com');
+  const isValid = url.startsWith('http') && url.length > 20;
+  preview.style.display = (isDrive && isValid) ? 'block' : 'none';
+  if (isDrive && isValid) {
+    preview.innerHTML = '✓ رابط Google Drive صحيح — سيُرسل للزبون مباشرة';
+  }
 }
 
 async function sendDelivery() {
@@ -1572,11 +1664,18 @@ let _adminFile = null;
 function adminFileSelected(inp) {
   const file = inp.files[0];
   if (!file) return;
+  // تحذير لو الحجم أكبر من 45MB
+  const maxSize = 47185920; // 45MB
+  if (file.size > maxSize) {
+    toast(`حجم الملف ${(file.size/1024/1024).toFixed(1)}MB كبير جداً — الحد 45MB`, 'err');
+    inp.value = '';
+    return;
+  }
   _adminFile = file;
   const prev = document.getElementById('admin-file-prev');
   const name = document.getElementById('admin-file-name');
   if (prev) prev.style.display = 'flex';
-  if (name) name.textContent = file.name;
+  if (name) name.textContent = `${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
 }
 
 function adminCancelFile() {
