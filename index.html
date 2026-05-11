@@ -3,1750 +3,634 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منتجلي — لوحة الإدارة</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>منتجلي — لوحة تحكم الأدمن</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  --bg:#07070d; --sidebar:#0d0d18; --card:#13131e; --card2:#1a1a28;
-  --border:#252535; --accent:#c8a96e; --accent2:#e8c98a; --gold-glow:rgba(200,169,110,.12);
-  --text:#f0ede8; --muted:#6a6a82; --danger:#e05c5c; --success:#5cb88a;
-  --info:#6ab4e8; --warn:#e8b84b; --font:'IBM Plex Sans Arabic',sans-serif;
+:root{--bg:#050508;--bg2:#0a0a12;--surface:rgba(16,16,26,.92);--surface-solid:#10101a;--border:rgba(255,255,255,.05);--border-hover:rgba(218,175,90,.22);--gold:#dab05a;--gold2:#f0d078;--gold-dim:rgba(218,175,90,.06);--text:#f0ece4;--text2:#c4c0b8;--muted:#605e6e;--danger:#e85858;--success:#42d68a;--info:#6ab4e8;--font:'IBM Plex Sans Arabic',sans-serif;--display:'Noto Kufi Arabic','IBM Plex Sans Arabic',sans-serif;--radius:14px;--radius-sm:8px;--ease:cubic-bezier(.4,0,.2,1)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(218,175,90,.18);border-radius:10px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-i{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#080810;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+
+/* ═══ LOGIN SCREEN ═══ */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(218,175,90,.05) 0%,transparent 60%)}
+.login-card{background:var(--surface-solid);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:100%;max-width:420px;text-align:center;animation:fadeUp .5s var(--ease)}
+.login-logo{font-family:var(--display);font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
+.login-field{width:100%;background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-family:var(--font);font-size:14px;margin-bottom:14px;transition:all .3s var(--ease);direction:ltr;text-align:left}
+.login-field:focus{outline:none;border-color:rgba(218,175,90,.4);box-shadow:0 0 0 3px rgba(218,175,90,.06)}
+.login-field::placeholder{color:var(--muted)}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:14px;border-radius:var(--radius-sm);font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:all .35s var(--ease);margin-top:8px}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(218,175,90,.35)}
+.login-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.login-err{color:var(--danger);font-size:13px;margin-top:12px;min-height:20px}
+
+/* ═══ ADMIN LAYOUT ═══ */
+#admin-app{display:none;min-height:100vh}
+.admin-sidebar{position:fixed;right:0;top:0;width:260px;height:100vh;background:var(--surface-solid);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sidebar-logo{font-family:var(--display);font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:28px 24px 8px;text-align:center}
+.sidebar-role{text-align:center;font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-dim);display:inline-block;padding:3px 14px;border-radius:20px;margin:4px auto 24px;border:1px solid rgba(218,175,90,.15)}
+.sidebar-nav{flex:1;padding:0 12px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .25s var(--ease);margin-bottom:4px;border:1px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.03);color:var(--text)}
+.nav-item.active{background:var(--gold-dim);color:var(--gold);border-color:rgba(218,175,90,.12);font-weight:600}
+.nav-item .nav-icon{font-size:18px;width:24px;text-align:center}
+.nav-item .nav-badge{margin-right:auto;background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-footer .sf-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b89540);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#080810;flex-shrink:0}
+.sidebar-footer .sf-info{flex:1;min-width:0}.sf-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-email{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sf-logout{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px;transition:color .2s}.sf-logout:hover{color:var(--danger)}
+
+.admin-main{margin-right:260px;padding:32px 36px;min-height:100vh}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.page-title{font-family:var(--display);font-size:26px;font-weight:800;display:flex;align-items:center;gap:10px}
+.refresh-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:500;transition:all .25s var(--ease);display:flex;align-items:center;gap:6px}
+.refresh-btn:hover{border-color:var(--border-hover);color:var(--text)}
+
+/* ═══ STATS CARDS ═══ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px;transition:all .3s var(--ease)}
+.stat-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.stat-card .sc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.stat-card .sc-icon.green{background:rgba(66,214,138,.08);color:var(--success)}
+.stat-card .sc-icon.gold{background:var(--gold-dim);color:var(--gold)}
+.stat-card .sc-icon.blue{background:rgba(106,180,232,.08);color:var(--info)}
+.stat-card .sc-icon.red{background:rgba(232,88,88,.08);color:var(--danger)}
+.stat-card .sc-val{font-family:var(--display);font-size:32px;font-weight:900;color:var(--gold)}.stat-card .sc-label{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ═══ PAGE SECTIONS ═══ */
+.page-section{display:none;animation:fadeUp .4s var(--ease)}
+.page-section.active{display:block}
+
+/* ═══ TABLE ═══ */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.table-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.table-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+table{width:100%;border-collapse:collapse}
+th{text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:14px 18px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.015)}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.status-badge.pending{background:rgba(218,175,90,.1);color:var(--gold)}
+.status-badge.processing{background:rgba(106,180,232,.1);color:var(--info)}
+.status-badge.completed{background:rgba(66,214,138,.1);color:var(--success)}
+.status-badge.cancelled{background:rgba(232,88,88,.1);color:var(--danger)}
+.status-badge.assigned{background:rgba(106,180,232,.1);color:var(--info)}
+.status-badge.in_progress{background:rgba(218,175,90,.1);color:var(--gold)}
+.status-badge.active{background:rgba(66,214,138,.1);color:var(--success)}
+.status-badge.inactive{background:rgba(232,88,88,.1);color:var(--danger)}
+.action-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:11px;transition:all .2s var(--ease);white-space:nowrap}
+.action-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.action-btn.gold{border-color:rgba(218,175,90,.2);color:var(--gold)}
+.action-btn.gold:hover{background:var(--gold-dim)}
+.action-btn.danger{border-color:rgba(232,88,88,.15);color:var(--danger)}
+.action-btn.danger:hover{background:rgba(232,88,88,.06)}
+.action-btn.success{border-color:rgba(66,214,138,.15);color:var(--success)}
+.action-btn.success:hover{background:rgba(66,214,138,.06)}
+.actions-cell{display:flex;gap:6px;flex-wrap:wrap}
+.add-btn{background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:8px 20px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;transition:all .3s var(--ease);display:flex;align-items:center;gap:6px}
+.add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(218,175,90,.3)}
+.empty-state{text-align:center;padding:48px;color:var(--muted);font-size:14px}
+
+/* ═══ SHOWCASE MANAGER ═══ */
+.showcase-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:24px}
+.showcase-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .3s var(--ease)}
+.showcase-card:hover{border-color:var(--border-hover)}
+.showcase-preview{aspect-ratio:9/14;max-height:260px;background:#0a0a14;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.showcase-preview video{width:100%;height:100%;object-fit:cover}
+.showcase-preview .placeholder{color:var(--muted);font-size:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.showcase-preview .placeholder-icon{font-size:36px;opacity:.3}
+.showcase-info{padding:16px}
+.showcase-pkg-name{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:10px;color:var(--gold)}
+.showcase-actions{display:flex;gap:8px}
+.file-upload-btn{position:relative;overflow:hidden;cursor:pointer}
+.file-upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+
+/* ═══ MODAL ═══ */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:2000;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(12px)}
+.modal-bg.open{display:flex;animation:fadeIn .2s var(--ease)}
+.modal-box{background:var(--surface-solid);border:1px solid var(--border);border-radius:16px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;padding:32px}
+.modal-title{font-family:var(--display);font-size:20px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.modal-field{margin-bottom:16px}
+.modal-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.modal-input{width:100%;background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:var(--text);font-family:var(--font);font-size:14px;transition:all .3s var(--ease)}
+.modal-input:focus{outline:none;border-color:rgba(218,175,90,.4);box-shadow:0 0 0 3px rgba(218,175,90,.06)}
+.modal-input::placeholder{color:var(--muted)}
+select.modal-input{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23605e6e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center}
+.modal-btns{display:flex;gap:10px;margin-top:24px}
+.modal-submit{flex:1;background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:13px;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .3s var(--ease)}
+.modal-submit:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(218,175,90,.3)}
+.modal-submit:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.modal-cancel{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:13px 24px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all .25s var(--ease)}
+.modal-cancel:hover{color:var(--text);border-color:var(--muted)}
+
+/* ═══ ORDER DETAIL ═══ */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.detail-item{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
+.detail-item .di-label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600}.detail-item .di-val{font-size:14px;font-weight:600}
+.detail-item.full{grid-column:1/-1}
+.file-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.file-chip{background:var(--gold-dim);border:1px solid rgba(218,175,90,.1);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--gold);text-decoration:none;transition:all .2s}.file-chip:hover{background:rgba(218,175,90,.12)}
+
+@media(max-width:900px){
+  .admin-sidebar{width:220px}.admin-main{margin-right:220px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}.showcase-grid{grid-template-columns:repeat(2,1fr)}
+  .detail-grid{grid-template-columns:1fr}
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
-
-/* ══ LOGIN ══ */
-#login-screen{
-  position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
-  padding:24px;background:var(--bg);
+@media(max-width:640px){
+  .admin-sidebar{display:none}.admin-main{margin-right:0}
+  .stats-grid{grid-template-columns:1fr}.showcase-grid{grid-template-columns:1fr}
 }
-#login-screen::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(200,169,110,.08) 0%,transparent 60%);
-}
-.login-box{
-  background:var(--card);border:1px solid var(--border);border-radius:22px;
-  padding:44px 38px;width:100%;max-width:400px;position:relative;z-index:1;
-  box-shadow:0 32px 90px rgba(0,0,0,.7);
-}
-.login-logo{
-  text-align:center;font-size:26px;font-weight:700;margin-bottom:4px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.login-badge{text-align:center;font-size:12px;color:var(--muted);margin-bottom:28px;}
-.lfield{margin-bottom:16px;}
-.llabel{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;display:block;}
-.linput{
-  width:100%;background:rgba(255,255,255,.04);border:2px solid var(--border);
-  border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--font);
-  font-size:14px;transition:border-color .2s;direction:ltr;text-align:left;
-}
-.linput:focus{outline:none;border-color:rgba(200,169,110,.5);}
-.linput::placeholder{color:var(--muted);}
-.lbtn{
-  width:100%;background:linear-gradient(135deg,var(--accent),#b8954a);color:#0a0a0f;
-  border:none;padding:14px;border-radius:10px;font-family:var(--font);font-size:15px;
-  font-weight:700;cursor:pointer;transition:all .3s;margin-top:4px;
-}
-.lbtn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(200,169,110,.3);}
-.lbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
-.lerr{color:var(--danger);font-size:13px;margin-top:12px;text-align:center;display:none;padding:8px;background:rgba(224,92,92,.1);border-radius:8px;}
-
-/* ══ LAYOUT ══ */
-#app{display:none;flex-direction:row;min-height:100vh;}
-
-/* SIDEBAR */
-.sidebar{
-  width:248px;min-height:100vh;background:var(--sidebar);
-  border-left:1px solid var(--border);position:fixed;top:0;right:0;bottom:0;
-  display:flex;flex-direction:column;z-index:50;
-}
-.sb-header{padding:22px 20px 16px;border-bottom:1px solid var(--border);}
-.sb-logo{font-size:20px;font-weight:700;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.sb-role-chip{display:inline-flex;align-items:center;gap:5px;margin-top:6px;
-  font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
-.chip-super{background:rgba(200,169,110,.15);color:var(--accent);}
-.chip-sub{background:rgba(106,180,232,.15);color:var(--info);}
-.sb-nav{flex:1;padding:10px 0;overflow-y:auto;}
-.sbn{
-  display:flex;align-items:center;gap:10px;padding:11px 20px;cursor:pointer;
-  transition:all .2s;color:var(--muted);font-size:14px;font-weight:500;
-  border-right:3px solid transparent;user-select:none;
-}
-.sbn:hover{background:rgba(255,255,255,.04);color:var(--text);}
-.sbn.active{background:rgba(200,169,110,.08);color:var(--accent);border-right-color:var(--accent);}
-.sbn-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
-.sbn-badge{margin-right:auto;background:var(--accent);color:#0a0a0f;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;}
-.sb-sep{height:1px;background:var(--border);margin:6px 14px;}
-.sb-bottom{padding:14px 18px;border-top:1px solid var(--border);}
-.sb-user{display:flex;align-items:center;gap:10px;}
-.sb-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#0a0a0f;flex-shrink:0;background:linear-gradient(135deg,var(--accent),#b8954a);}
-.sb-info{flex:1;min-width:0;}
-.sb-uname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sb-email{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sb-logout{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;transition:color .2s;flex-shrink:0;}
-.sb-logout:hover{color:var(--danger);}
-
-/* MAIN */
-.main{margin-right:248px;flex:1;padding:28px;min-height:100vh;}
-.pg-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px;gap:12px;flex-wrap:wrap;}
-.pg-title{font-size:22px;font-weight:700;}
-.pg-sub{font-size:13px;color:var(--muted);margin-top:3px;}
-
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:24px;}
-.sc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 20px;position:relative;overflow:hidden;}
-.sc::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:var(--c,var(--accent));}
-.sc-lbl{font-size:12px;color:var(--muted);margin-bottom:8px;}
-.sc-val{font-size:26px;font-weight:700;color:var(--c,var(--accent));}
-.sc-sub{font-size:11px;color:var(--muted);margin-top:3px;}
-.sc-ico{position:absolute;top:14px;left:16px;font-size:26px;opacity:.12;}
-
-/* CARD */
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:20px;}
-.card-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-.card-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
-.card-body{padding:20px;}
-
-/* TABLE */
-.tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-size:11px;font-weight:600;letter-spacing:.4px;color:var(--muted);text-transform:uppercase;padding:10px 14px;text-align:right;border-bottom:1px solid var(--border);}
-.tbl td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;vertical-align:middle;}
-.tbl tr:last-child td{border-bottom:none;}
-.tbl tr:hover td{background:rgba(255,255,255,.02);}
-
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
-.b-pending   {background:rgba(200,169,110,.15);color:var(--accent);}
-.b-processing{background:rgba(106,180,232,.15);color:var(--info);}
-.b-completed {background:rgba(92,184,138,.15); color:var(--success);}
-.b-cancelled {background:rgba(224,92,92,.15);  color:var(--danger);}
-.b-revision  {background:rgba(232,184,75,.15); color:var(--warn);}
-.b-super{background:rgba(200,169,110,.2);color:var(--accent);}
-.b-admin{background:rgba(106,180,232,.2);color:var(--info);}
-.b-viewer{background:rgba(92,184,138,.2);color:var(--success);}
-.b-active{background:rgba(92,184,138,.15);color:var(--success);}
-.b-inactive{background:rgba(255,255,255,.08);color:var(--muted);}
-
-/* BTN */
-.btn{padding:7px 14px;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
-.btn-gold{background:linear-gradient(135deg,var(--accent),#b8954a);color:#0a0a0f;}
-.btn-gold:hover{box-shadow:0 4px 18px rgba(200,169,110,.3);transform:translateY(-1px);}
-.btn-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);}
-.btn-ghost:hover{background:rgba(255,255,255,.1);}
-.btn-ok{background:rgba(92,184,138,.12);color:var(--success);border:1px solid rgba(92,184,138,.25);}
-.btn-ok:hover{background:rgba(92,184,138,.22);}
-.btn-info{background:rgba(106,180,232,.12);color:var(--info);border:1px solid rgba(106,180,232,.25);}
-.btn-info:hover{background:rgba(106,180,232,.22);}
-.btn-red{background:rgba(224,92,92,.12);color:var(--danger);border:1px solid rgba(224,92,92,.25);}
-.btn-red:hover{background:rgba(224,92,92,.22);}
-.btn-warn{background:rgba(232,184,75,.12);color:var(--warn);border:1px solid rgba(232,184,75,.25);}
-.btn-warn:hover{background:rgba(232,184,75,.22);}
-.btn-sm{padding:5px 10px;font-size:11px;}
-
-/* INPUTS */
-.fg{margin-bottom:16px;}
-.flabel{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;display:block;}
-.finput{width:100%;background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--font);font-size:14px;direction:rtl;transition:border-color .2s;}
-.finput:focus{outline:none;border-color:rgba(200,169,110,.4);}
-.finput::placeholder{color:var(--muted);}
-.finput.ltr{direction:ltr;text-align:left;}
-.fselect{width:100%;background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--font);font-size:14px;cursor:pointer;}
-.fselect:focus{outline:none;border-color:rgba(200,169,110,.4);}
-.ftextarea{width:100%;background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--font);font-size:14px;direction:rtl;resize:vertical;min-height:80px;transition:border-color .2s;}
-.ftextarea:focus{outline:none;border-color:rgba(200,169,110,.4);}
-.ftextarea::placeholder{color:var(--muted);}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-
-/* PERMISSIONS GRID */
-.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
-.perm-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;}
-.perm-item:hover{border-color:rgba(200,169,110,.3);}
-.perm-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
-.perm-item label{font-size:13px;cursor:pointer;flex:1;}
-.perm-item.checked{background:rgba(200,169,110,.06);border-color:rgba(200,169,110,.3);}
-
-/* MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);}
-.modal-bg.open{display:flex;animation:fin .2s ease;}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 90px rgba(0,0,0,.8);animation:sup .28s cubic-bezier(.34,1.2,.64,1);}
-.modal::-webkit-scrollbar{width:4px;}
-.modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-.mhead{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);z-index:2;}
-.mtitle{font-size:18px;font-weight:700;}
-.mclose{background:rgba(255,255,255,.08);border:none;color:var(--text);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;transition:all .2s;}
-.mclose:hover{background:rgba(255,255,255,.16);}
-.mbody{padding:22px;}
-
-/* SEARCH */
-.srch{background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:10px;padding:9px 13px;color:var(--text);font-family:var(--font);font-size:13px;direction:rtl;min-width:210px;transition:border-color .2s;}
-.srch:focus{outline:none;border-color:rgba(200,169,110,.4);}
-.srch::placeholder{color:var(--muted);}
-.fsel{background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:10px;padding:9px 11px;color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;}
-.fsel:focus{outline:none;}
-
-/* FILE DROP */
-.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:26px;text-align:center;cursor:pointer;transition:all .25s;position:relative;}
-.drop-zone:hover,.drop-zone.over{border-color:var(--accent);background:rgba(200,169,110,.04);}
-.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-
-/* PROGRESS */
-.prog-wrap{display:none;margin-top:10px;}
-.prog-bar{background:var(--border);border-radius:4px;height:6px;overflow:hidden;}
-.prog-fill{background:var(--accent);height:100%;width:0%;transition:width .3s;border-radius:4px;}
-.prog-txt{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
-
-/* EMPTY */
-.empty{text-align:center;padding:48px;color:var(--muted);}
-.empty-ico{font-size:42px;opacity:.4;margin-bottom:12px;}
-.empty-txt{font-size:15px;font-weight:500;}
-
-/* LOADING */
-.spin{display:inline-block;width:18px;height:18px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:rot .8s linear infinite;}
-
-/* TOAST */
-#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 22px;font-size:14px;font-weight:600;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);min-width:220px;text-align:center;pointer-events:none;}
-#toast.show{transform:translateX(-50%) translateY(0);}
-#toast.ok  {border-color:var(--success);color:var(--success);}
-#toast.err {border-color:var(--danger); color:var(--danger);}
-#toast.info{border-color:var(--info);   color:var(--info);}
-
-/* KEYFRAMES */
-@keyframes fin {from{opacity:0}to{opacity:1}}
-@keyframes sup {from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-@keyframes rot {to{transform:rotate(360deg)}}
-@keyframes pd  {from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
-
-.page{display:none;}
-.page.active{display:block;animation:pd .3s ease both;}
-
-/* AVATAR COLORS */
-.av{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
-
-@media(max-width:900px){.stats{grid-template-columns:1fr 1fr;}.main{margin-right:0;padding:16px;}.sidebar{display:none;}}
 </style>
 </head>
 <body>
 
-<!-- ══════ LOGIN ══════ -->
+<!-- ═══ LOGIN SCREEN ═══ -->
 <div id="login-screen">
-  <div class="login-box">
+  <div class="login-card">
     <div class="login-logo">منتجلي</div>
-    <div class="login-badge">🎛 لوحة إدارة النظام</div>
-    <div class="lfield">
-      <label class="llabel">الإيميل</label>
-      <input class="linput" type="email" id="l-email" placeholder="admin@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="lfield">
-      <label class="llabel">كلمة المرور</label>
-      <input class="linput" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="lbtn" id="lbtn" onclick="doLogin()">دخول للوحة</button>
-    <div class="lerr" id="lerr"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-dim);display:inline-block;padding:3px 14px;border-radius:20px;margin-bottom:20px;border:1px solid rgba(218,175,90,.15)">🔐 لوحة الأدمن</div>
+    <div class="login-sub">تسجيل دخول مخصص للمدير فقط</div>
+    <input class="login-field" type="email" id="l-email" placeholder="الإيميل" autocomplete="email">
+    <input class="login-field" type="password" id="l-pass" placeholder="كلمة المرور" autocomplete="current-password">
+    <button class="login-btn" id="l-btn" onclick="adminLogin()">تسجيل الدخول</button>
+    <div class="login-err" id="l-err"></div>
   </div>
 </div>
 
-<!-- ══════ APP ══════ -->
-<div id="app">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sb-header">
-      <div class="sb-logo">منتجلي</div>
-      <div id="sb-chip"></div>
-    </div>
-    <nav class="sb-nav" id="sb-nav">
-      <!-- injected by JS based on role -->
+<!-- ═══ ADMIN APP ═══ -->
+<div id="admin-app">
+  <div class="admin-sidebar">
+    <div class="sidebar-logo">منتجلي</div>
+    <div style="text-align:center"><span class="sidebar-role">🛡️ مدير</span></div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="switchPage('dashboard')"><span class="nav-icon">📊</span> الرئيسية</div>
+      <div class="nav-item" onclick="switchPage('orders')"><span class="nav-icon">📋</span> الطلبات <span class="nav-badge" id="orders-badge" style="display:none">0</span></div>
+      <div class="nav-item" onclick="switchPage('showcase')"><span class="nav-icon">🎬</span> فيديوهات العرض</div>
+      <div class="nav-item" onclick="switchPage('editors')"><span class="nav-icon">✂️</span> المونتيرين</div>
+      <div class="nav-item" onclick="switchPage('assignments')"><span class="nav-icon">📌</span> التعيينات</div>
+      <div class="nav-item" onclick="switchPage('deliver')"><span class="nav-icon">📦</span> تسليم الفيديو</div>
+      <div class="nav-item" onclick="switchPage('chat')"><span class="nav-icon">💬</span> الرسائل</div>
     </nav>
-    <div class="sb-bottom">
-      <div class="sb-user">
-        <div class="sb-av" id="sb-av">A</div>
-        <div class="sb-info">
-          <div class="sb-uname" id="sb-uname">—</div>
-          <div class="sb-email" id="sb-email">—</div>
-        </div>
-        <button class="sb-logout" onclick="doLogout()" title="خروج">⏻</button>
-      </div>
+    <div class="sidebar-footer">
+      <div class="sf-avatar" id="sf-avatar">A</div>
+      <div class="sf-info"><div class="sf-name" id="sf-name">Admin</div><div class="sf-email" id="sf-email">admin@...</div></div>
+      <button class="sf-logout" onclick="adminLogout()" title="خروج">⏻</button>
     </div>
   </div>
 
-  <!-- MAIN -->
-  <div class="main">
-
-    <!-- ── DASHBOARD ── -->
-    <div class="page" id="page-dashboard">
-      <div class="pg-head">
-        <div><div class="pg-title">📊 نظرة عامة</div><div class="pg-sub">إحصائيات منتجلي</div></div>
-        <button class="btn btn-ghost" onclick="loadDashboard()">🔄 تحديث</button>
+  <div class="admin-main">
+    <!-- DASHBOARD -->
+    <div class="page-section active" id="page-dashboard">
+      <div class="page-header"><div class="page-title">📊 نظرة عامة</div><button class="refresh-btn" onclick="loadAll()">🔄 تحديث</button></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="sc-icon gold">👥</div><div><div class="sc-val" id="st-users">0</div><div class="sc-label">حساب مسجّل</div></div></div>
+        <div class="stat-card"><div class="sc-icon blue">📋</div><div><div class="sc-val" id="st-orders">0</div><div class="sc-label">إجمالي الطلبات</div></div></div>
+        <div class="stat-card"><div class="sc-icon gold">⏳</div><div><div class="sc-val" id="st-pending">0</div><div class="sc-label">قيد المراجعة</div></div></div>
+        <div class="stat-card"><div class="sc-icon green">✓</div><div><div class="sc-val" id="st-done">0</div><div class="sc-label">مكتملة</div></div></div>
       </div>
-      <div class="stats">
-        <div class="sc" style="--c:var(--accent)"><div class="sc-ico">👥</div><div class="sc-lbl">المستخدمون</div><div class="sc-val" id="s-users">—</div><div class="sc-sub">حساب مسجّل</div></div>
-        <div class="sc" style="--c:var(--info)"><div class="sc-ico">📋</div><div class="sc-lbl">الطلبات</div><div class="sc-val" id="s-orders">—</div><div class="sc-sub">إجمالي</div></div>
-        <div class="sc" style="--c:var(--warn)"><div class="sc-ico">⏳</div><div class="sc-lbl">قيد المراجعة</div><div class="sc-val" id="s-pending">—</div><div class="sc-sub">تحتاج إجراء</div></div>
-        <div class="sc" style="--c:var(--success)"><div class="sc-ico">✅</div><div class="sc-lbl">مكتملة</div><div class="sc-val" id="s-done">—</div><div class="sc-sub">طلب منجز</div></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">📋 آخر الطلبات</div><button class="btn btn-ghost btn-sm" onclick="showPage('orders')">عرض الكل</button></div>
-        <div class="card-body" id="recent-body"><div class="empty"><div class="spin"></div></div></div>
-      </div>
+      <div class="table-wrap"><div class="table-head"><div class="table-title">📋 آخر الطلبات</div><button class="action-btn" onclick="switchPage('orders')">عرض الكل</button></div><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="dash-orders-tbody"></tbody></table></div>
     </div>
 
-    <!-- ── ORDERS ── -->
-    <div class="page" id="page-orders">
-      <div class="pg-head">
-        <div><div class="pg-title">📋 الطلبات</div><div class="pg-sub">إدارة ومتابعة طلبات الزبائن</div></div>
-        <button class="btn btn-ghost" onclick="loadOrders()">🔄 تحديث</button>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <input class="srch" id="o-search" placeholder="🔍 بحث برقم الطلب أو الاسم..." oninput="filterOrders()">
-            <select class="fsel" id="o-filter" onchange="filterOrders()">
-              <option value="">كل الطلبات</option>
-              <option value="pending">قيد المراجعة</option>
-              <option value="processing">جارٍ التنفيذ</option>
-              <option value="completed">مكتملة</option>
-              <option value="revision">طلب تعديل</option>
-              <option value="cancelled">ملغية</option>
-            </select>
-          </div>
-        </div>
-        <div class="card-body" id="orders-body"><div class="empty"><div class="spin"></div></div></div>
-      </div>
+    <!-- ORDERS -->
+    <div class="page-section" id="page-orders">
+      <div class="page-header"><div class="page-title">📋 الطلبات</div><button class="refresh-btn" onclick="loadOrders()">🔄 تحديث</button></div>
+      <div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الملفات</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="orders-tbody"></tbody></table></div>
     </div>
 
-    <!-- ── USERS ── -->
-    <div class="page" id="page-users">
-      <div class="pg-head">
-        <div><div class="pg-title">👥 المستخدمون</div><div class="pg-sub">الحسابات المسجّلة في منتجلي</div></div>
-        <button class="btn btn-ghost" onclick="loadUsers()">🔄 تحديث</button>
-      </div>
-      <div class="card">
-        <div class="card-head"><input class="srch" id="u-search" placeholder="🔍 بحث..." oninput="filterUsers()"></div>
-        <div class="card-body" id="users-body"><div class="empty"><div class="spin"></div></div></div>
-      </div>
+    <!-- SHOWCASE -->
+    <div class="page-section" id="page-showcase">
+      <div class="page-header"><div class="page-title">🎬 فيديوهات العرض</div></div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:8px">ارفع فيديو لكل باقة — يظهر تلقائياً على الموقع فوق الباقة المخصصة.</p>
+      <div class="showcase-grid" id="showcase-grid"></div>
     </div>
 
-    <!-- ── PORTFOLIO ── -->
-    <div class="page" id="page-portfolio">
-      <div class="pg-head">
-        <div><div class="pg-title">🎬 أعمالي</div><div class="pg-sub">معرض الأعمال الظاهر في موقع منتجلي</div></div>
-        <button class="btn btn-gold" onclick="openPortfolioAdd()">+ إضافة عمل</button>
-      </div>
-      <div class="card">
-        <div class="card-body" id="portfolio-body"><div class="empty"><div class="spin"></div></div></div>
-      </div>
+    <!-- EDITORS -->
+    <div class="page-section" id="page-editors">
+      <div class="page-header"><div class="page-title">✂️ المونتيرين</div><button class="add-btn" onclick="openEditorModal()">+ إضافة مونتير</button></div>
+      <div class="table-wrap"><table><thead><tr><th>الاسم</th><th>الإيميل</th><th>الهاتف</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="editors-tbody"></tbody></table></div>
     </div>
 
-    <!-- ── DELIVERY ── -->
-    <div class="page" id="page-delivery">
-      <div class="pg-head">
-        <div><div class="pg-title">📤 تسليم الفيديو</div><div class="pg-sub">ارسل الفيديو المنتج للزبون</div></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">اختر الطلب وأرسل الفيديو</div></div>
-        <div class="card-body">
-          <div class="fg">
-            <label class="flabel">اختر طلب الزبون</label>
-            <select class="fselect" id="del-order" onchange="onDelOrderChange()"><option value="">— اختر —</option></select>
-          </div>
-          <div id="del-order-info" style="display:none;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;">
-            <div id="del-order-details" style="font-size:13px;"></div>
-          </div>
-          <!-- ══ اختيار طريقة الإرسال ══ -->
-          <div style="display:flex;gap:8px;margin-bottom:18px;">
-            <button id="del-tab-drive" onclick="delSwitchTab('drive')"
-              style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--accent);background:var(--gold-glow);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;">
-              🔗 Google Drive
-            </button>
-            <button id="del-tab-upload" onclick="delSwitchTab('upload')"
-              style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:none;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">
-              📁 رفع مباشر
-            </button>
-          </div>
-
-          <!-- ══ تبويب Google Drive ══ -->
-          <div id="del-panel-drive">
-            <div class="fg">
-              <label class="flabel">رابط Google Drive</label>
-              <input class="finput ltr" type="url" id="del-url"
-                placeholder="https://drive.google.com/file/d/..."
-                oninput="delPreviewDrive(this.value)">
-            </div>
-            <!-- تعليمات Google Drive -->
-            <div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.9;margin-bottom:4px;">
-              <div style="font-weight:700;color:var(--accent);margin-bottom:6px;">📋 خطوات مشاركة فيديو من Google Drive:</div>
-              <div>١ — ارفع الفيديو على <a href="https://drive.google.com" target="_blank" style="color:var(--accent)">Google Drive</a></div>
-              <div>٢ — كليك يمين على الفيديو ← <b>Share</b> ← <b>Anyone with the link</b></div>
-              <div>٣ — اضغط <b>Copy link</b> والصقه هنا</div>
-              <div style="margin-top:6px;color:var(--muted);">💡 يدعم أي حجم فيديو بدون قيود</div>
-            </div>
-            <!-- معاينة الرابط -->
-            <div id="del-drive-preview" style="display:none;margin-top:8px;padding:10px 14px;background:rgba(92,184,138,.07);border:1px solid rgba(92,184,138,.25);border-radius:8px;font-size:12px;color:var(--success);">
-              ✓ رابط Google Drive صحيح
-            </div>
-          </div>
-
-          <!-- ══ تبويب رفع مباشر ══ -->
-          <div id="del-panel-upload" style="display:none;">
-            <div class="fg">
-              <label class="flabel">رفع ملف فيديو مباشرة <span style="color:var(--muted);font-weight:400;">(حتى 45 MB)</span></label>
-              <div class="drop-zone" id="del-drop"
-                ondragover="event.preventDefault();this.classList.add('over')"
-                ondragleave="this.classList.remove('over')"
-                ondrop="handleDelDrop(event)">
-                <input type="file" accept="video/mp4,video/quicktime,video/x-msvideo,video/webm" id="del-file" onchange="uploadDelFile(this)">
-                <div style="font-size:28px;margin-bottom:8px">🎬</div>
-                <div style="font-size:13px;color:var(--muted)">اسحب الفيديو هنا أو اضغط للاختيار</div>
-                <div style="font-size:11px;color:var(--border);margin-top:4px">MP4, MOV, AVI, WEBM — حتى 45MB</div>
-              </div>
-              <div class="prog-wrap" id="del-prog">
-                <div class="prog-bar"><div class="prog-fill" id="del-prog-fill"></div></div>
-                <div class="prog-txt" id="del-prog-txt">0%</div>
-              </div>
-              <div style="margin-top:8px;padding:8px 12px;background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-radius:8px;font-size:11px;color:var(--muted);">
-                ⚠️ للفيديوهات أكبر من 45MB — استخدم Google Drive
-              </div>
-            </div>
-          </div>
-          <div class="fg">
-            <label class="flabel">ملاحظة للزبون (اختياري)</label>
-            <textarea class="ftextarea" id="del-note" placeholder="تم تسليم الفيديو، إذا تحتاج تعديل أخبرنا..."></textarea>
-          </div>
-          <button class="btn btn-gold" onclick="sendDelivery()" style="width:100%;justify-content:center;padding:14px;font-size:15px;">📤 إرسال الفيديو للزبون</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">📦 الطلبات المسلّمة</div></div>
-        <div class="card-body" id="delivered-body"><div class="empty"><div class="spin"></div></div></div>
-      </div>
+    <!-- ASSIGNMENTS -->
+    <div class="page-section" id="page-assignments">
+      <div class="page-header"><div class="page-title">📌 التعيينات</div><button class="add-btn" onclick="openAssignModal()">+ تعيين طلب</button></div>
+      <div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>المونتير</th><th>الحالة</th><th>ملاحظات</th><th>تاريخ التعيين</th><th>إجراء</th></tr></thead><tbody id="assign-tbody"></tbody></table></div>
     </div>
 
-
-    <!-- ── MESSAGES ── -->
-    <div class="page" id="page-messages">
-      <div class="pg-head">
-        <div><div class="pg-title">💬 الرسائل</div><div class="pg-sub">تواصل مع الزبائن والرد عليهم مباشرة</div></div>
-        <button class="btn btn-ghost" onclick="loadConversations()">🔄 تحديث</button>
-      </div>
-      <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 148px);">
-
-        <!-- قائمة المحادثات -->
-        <div class="card" style="margin:0;overflow:hidden;display:flex;flex-direction:column;">
-          <div class="card-head" style="padding:12px 16px;">
-            <div class="card-title">المحادثات</div>
-            <span id="conv-unread-count" style="background:var(--danger);color:#fff;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;display:none;"></span>
-          </div>
-          <div style="flex:1;overflow-y:auto;" id="conv-list">
-            <div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin"></div></div>
-          </div>
-        </div>
-
-        <!-- منطقة الدردشة -->
-        <div class="card" style="margin:0;overflow:hidden;display:flex;flex-direction:column;">
-          <div id="chat-placeholder" style="display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:12px;color:var(--muted);">
-            <div style="font-size:48px;opacity:.3">💬</div>
-            <div style="font-size:14px">اختر محادثة من القائمة</div>
-          </div>
-          <div id="chat-panel" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-            <!-- رأس المحادثة -->
-            <div class="card-head" style="padding:12px 18px;" id="chat-panel-head">
-              <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-                <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6ab4e8,#4a90d9);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;" id="cp-av">Z</div>
-                <div style="flex:1;min-width:0;">
-                  <div style="font-size:14px;font-weight:700;" id="cp-name">—</div>
-                  <div style="font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;" id="cp-info">—</div>
-                </div>
-              </div>
-              <div style="display:flex;gap:6px;flex-shrink:0;">
-                <button class="btn btn-ghost btn-sm" onclick="closeChat()">✓ أغلق</button>
-              </div>
-            </div>
-            <!-- معلومات الزبون -->
-            <div id="cp-user-card" style="padding:10px 18px;background:rgba(200,169,110,.04);border-bottom:1px solid var(--border);font-size:12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;"></div>
-            <!-- الرسائل -->
-            <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;" id="cp-msgs"></div>
-            <!-- إرسال -->
-            <div id="admin-file-prev" style="display:none;padding:6px 16px;border-top:1px solid var(--border);background:rgba(200,169,110,.05);align-items:center;gap:8px;">
-              <span>📎</span>
-              <span id="admin-file-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--accent);font-size:12px;"></span>
-              <button onclick="adminCancelFile()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;">✕</button>
-            </div>
-            <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;">
-              <label style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--muted);font-size:15px;transition:all .2s;" title="إرفاق ملف">
-                📎
-                <input type="file" id="admin-file-inp" accept="image/*,video/*" style="display:none" onchange="adminFileSelected(this)">
-              </label>
-              <textarea id="admin-reply" style="flex:1;background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13px;resize:none;max-height:90px;min-height:38px;direction:rtl;transition:border-color .2s;" placeholder="اكتب ردك على الزبون..."
-                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();adminSendMsg();}"
-                oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
-              <button class="btn btn-gold" onclick="adminSendMsg()" style="height:38px;padding:0 16px;">إرسال ➤</button>
-            </div>
-          </div>
-        </div>
-
-      </div>
+    <!-- DELIVER -->
+    <div class="page-section" id="page-deliver">
+      <div class="page-header"><div class="page-title">📦 تسليم الفيديو</div></div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px">أضف رابط الفيديو المسلّم وملاحظة اختيارية لكل طلب مكتمل.</p>
+      <div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>الحالة</th><th>رابط الفيديو</th><th>إجراء</th></tr></thead><tbody id="deliver-tbody"></tbody></table></div>
     </div>
 
-    <!-- ── ADMINS (Super only) ── -->
-    <div class="page" id="page-admins">
-      <div class="pg-head">
-        <div><div class="pg-title">🔑 إدارة الأدمنيه</div><div class="pg-sub">أنشئ حسابات المونتيرين وتحكم بصلاحياتهم</div></div>
-        <button class="btn btn-gold" onclick="openAddAdmin()">+ إضافة مونتير</button>
-      </div>
-      <div class="card">
-        <div class="card-body" id="admins-body"><div class="empty"><div class="spin"></div></div></div>
-      </div>
-    </div>
-
-  </div><!-- /main -->
-</div><!-- /app -->
-
-<!-- ══ ORDER MODAL ══ -->
-<div class="modal-bg" id="m-order">
-  <div class="modal">
-    <div class="mhead"><div class="mtitle" id="m-order-title">تفاصيل الطلب</div><button class="mclose" onclick="closeM('m-order')">✕</button></div>
-    <div class="mbody" id="m-order-body"></div>
-  </div>
-</div>
-
-<!-- ══ PORTFOLIO MODAL ══ -->
-<div class="modal-bg" id="m-port">
-  <div class="modal">
-    <div class="mhead"><div class="mtitle" id="m-port-title">إضافة عمل</div><button class="mclose" onclick="closeM('m-port')">✕</button></div>
-    <div class="mbody">
-      <div class="fg"><label class="flabel">عنوان العمل *</label><input class="finput" type="text" id="p-title" placeholder="مثلاً: مونتاج إعلاني لمنتج X"></div>
-      <div class="fg">
-        <label class="flabel">مخصص لباقة</label>
-        <select class="fselect" id="p-pkg">
-          <option value="">— عام (يظهر في الكل) —</option>
-          <option value="الباقة الأساسية">🔵 الباقة الأساسية</option>
-          <option value="الباقة الاحترافية">🟣 الباقة الاحترافية</option>
-          <option value="باقة الذكاء الاصطناعي">🤖 باقة AI</option>
-          <option value="الباقة النخبة">⭐ الباقة النخبة</option>
-        </select>
-      </div>
-      <div class="frow">
-        <div class="fg">
-          <label class="flabel">التصنيف</label>
-          <select class="fselect" id="p-cat">
-            <option value="commercial">إعلاني</option>
-            <option value="social">سوشيال ميديا</option>
-            <option value="awareness">وعي وشهرة</option>
-            <option value="ai">مونتاج AI</option>
-            <option value="other">أخرى</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label class="flabel">نوع المحتوى</label>
-          <select class="fselect" id="p-type" onchange="togglePType()">
-            <option value="youtube">🎬 YouTube</option>
-            <option value="upload">📁 رفع فيديو/صورة</option>
-            <option value="image">🖼 رابط صورة</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg" id="p-yt-g"><label class="flabel">رابط YouTube</label><input class="finput ltr" type="url" id="p-yturl" placeholder="https://youtube.com/watch?v=..." oninput="previewYT()"></div>
-      <div class="fg" id="p-up-g" style="display:none">
-        <label class="flabel">رفع ملف (فيديو أو صورة — حتى 50 MB)</label>
-        <div class="drop-zone" id="p-drop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="handlePortDrop(event)">
-          <input type="file" id="p-file" accept="video/*,image/*" onchange="uploadPortFile(this)">
-          <div style="font-size:26px;margin-bottom:6px">📁</div>
-          <div style="font-size:13px;color:var(--muted)">اسحب الملف أو اضغط</div>
-          <div style="font-size:11px;color:var(--border);margin-top:3px">MP4, MOV, JPG, PNG, GIF</div>
-        </div>
-        <div class="prog-wrap" id="p-prog"><div class="prog-bar"><div class="prog-fill" id="p-prog-fill"></div></div><div class="prog-txt" id="p-prog-txt">0%</div></div>
-        <div id="p-up-preview" style="display:none;margin-top:10px;border-radius:10px;overflow:hidden;max-height:200px;background:#000"></div>
-      </div>
-      <div class="fg" id="p-img-g" style="display:none"><label class="flabel">رابط الصورة</label><input class="finput ltr" type="url" id="p-imgurl" placeholder="https://..."></div>
-      <div id="p-yt-preview" style="display:none;margin-bottom:14px;"><div style="aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;"><iframe id="p-iframe" width="100%" height="100%" frameborder="0" allowfullscreen></iframe></div></div>
-      <div class="fg"><label class="flabel">وصف مختصر</label><textarea class="ftextarea" id="p-desc" placeholder="وصف العمل..."></textarea></div>
-      <input type="hidden" id="p-edit-id">
-      <input type="hidden" id="p-upload-url">
-      <button class="btn btn-gold" onclick="savePortfolio()" style="width:100%;justify-content:center;padding:13px;font-size:15px;">💾 حفظ العمل</button>
+    <!-- CHAT -->
+    <div class="page-section" id="page-chat">
+      <div class="page-header"><div class="page-title">💬 الرسائل</div><button class="refresh-btn" onclick="loadConversations()">🔄 تحديث</button></div>
+      <div class="table-wrap"><table><thead><tr><th>الزبون</th><th>الإيميل</th><th>آخر رسالة</th><th>الحالة</th><th>آخر تحديث</th><th>إجراء</th></tr></thead><tbody id="chat-tbody"></tbody></table></div>
     </div>
   </div>
 </div>
 
-<!-- ══ ADD ADMIN MODAL ══ -->
-<div class="modal-bg" id="m-admin">
-  <div class="modal">
-    <div class="mhead"><div class="mtitle" id="m-admin-title">إضافة مونتير جديد</div><button class="mclose" onclick="closeM('m-admin')">✕</button></div>
-    <div class="mbody">
-      <div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--accent);">
-        ⚡ ستُنشأ حساب Supabase جديد بالإيميل وكلمة المرور — المونتير يسجل دخوله بهما
-      </div>
-      <div class="frow">
-        <div class="fg"><label class="flabel">الاسم الكامل *</label><input class="finput" type="text" id="a-name" placeholder="أحمد علي"></div>
-        <div class="fg"><label class="flabel">الدور</label>
-          <select class="fselect" id="a-role">
-            <option value="editor">مونتير</option>
-            <option value="viewer">مشاهد فقط</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg"><label class="flabel">الإيميل *</label><input class="finput ltr" type="email" id="a-email" placeholder="editor@email.com"></div>
-      <div class="fg"><label class="flabel">كلمة المرور *</label>
-        <div style="position:relative;">
-          <input class="finput ltr" type="password" id="a-pass" placeholder="••••••••" style="padding-left:40px">
-          <button onclick="toggleAPass()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;">👁</button>
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px">8 أحرف على الأقل</div>
-      </div>
-      <div class="fg">
-        <label class="flabel">الصلاحيات</label>
-        <div class="perm-grid" id="perm-grid">
-          <div class="perm-item" onclick="togglePerm(this,'view_orders')">
-            <input type="checkbox" id="pv-view_orders" value="view_orders" checked>
-            <label for="pv-view_orders">👁 مشاهدة الطلبات</label>
-          </div>
-          <div class="perm-item checked" onclick="togglePerm(this,'update_orders')">
-            <input type="checkbox" id="pv-update_orders" value="update_orders" checked>
-            <label for="pv-update_orders">✏️ تحديث الطلبات</label>
-          </div>
-          <div class="perm-item" onclick="togglePerm(this,'deliver_video')">
-            <input type="checkbox" id="pv-deliver_video" value="deliver_video" checked>
-            <label for="pv-deliver_video">📤 تسليم الفيديو</label>
-          </div>
-          <div class="perm-item" onclick="togglePerm(this,'view_users')">
-            <input type="checkbox" id="pv-view_users" value="view_users">
-            <label for="pv-view_users">👥 مشاهدة المستخدمين</label>
-          </div>
-          <div class="perm-item" onclick="togglePerm(this,'manage_portfolio')">
-            <input type="checkbox" id="pv-manage_portfolio" value="manage_portfolio">
-            <label for="pv-manage_portfolio">🎬 إدارة الأعمال</label>
-          </div>
-          <div class="perm-item" onclick="togglePerm(this,'view_stats')">
-            <input type="checkbox" id="pv-view_stats" value="view_stats" checked>
-            <label for="pv-view_stats">📊 الإحصائيات</label>
-          </div>
-        </div>
-      </div>
-      <input type="hidden" id="a-edit-id">
-      <div id="a-result" style="display:none;" class="fg"></div>
-      <button class="btn btn-gold" id="a-save-btn" onclick="saveAdmin()" style="width:100%;justify-content:center;padding:13px;font-size:15px;">✅ إنشاء الحساب</button>
-    </div>
+<!-- ═══ MODALS ═══ -->
+<div class="modal-bg" id="modal-order-detail">
+  <div class="modal-box" id="order-detail-content"></div>
+</div>
+<div class="modal-bg" id="modal-editor">
+  <div class="modal-box">
+    <div class="modal-title" id="editor-modal-title">✂️ إضافة مونتير</div>
+    <input type="hidden" id="edit-editor-id">
+    <div class="modal-field"><div class="modal-label">الاسم *</div><input class="modal-input" id="ed-name" placeholder="اسم المونتير"></div>
+    <div class="modal-field"><div class="modal-label">الإيميل</div><input class="modal-input" id="ed-email" placeholder="email@..." dir="ltr"></div>
+    <div class="modal-field"><div class="modal-label">الهاتف</div><input class="modal-input" id="ed-phone" placeholder="07xxxxxxxxx" dir="ltr"></div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeModal('modal-editor')">إلغاء</button><button class="modal-submit" onclick="saveEditor()">حفظ</button></div>
   </div>
 </div>
-
-<div id="toast"></div>
+<div class="modal-bg" id="modal-assign">
+  <div class="modal-box">
+    <div class="modal-title">📌 تعيين طلب لمونتير</div>
+    <div class="modal-field"><div class="modal-label">رقم الطلب *</div><select class="modal-input" id="as-order"><option value="">اختر الطلب...</option></select></div>
+    <div class="modal-field"><div class="modal-label">المونتير *</div><select class="modal-input" id="as-editor"><option value="">اختر المونتير...</option></select></div>
+    <div class="modal-field"><div class="modal-label">ملاحظات</div><input class="modal-input" id="as-notes" placeholder="ملاحظات اختيارية..."></div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeModal('modal-assign')">إلغاء</button><button class="modal-submit" onclick="saveAssignment()">تعيين</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-deliver">
+  <div class="modal-box">
+    <div class="modal-title">📦 تسليم الفيديو</div>
+    <input type="hidden" id="del-order-id">
+    <div class="modal-field"><div class="modal-label">رابط الفيديو المسلّم *</div><input class="modal-input" id="del-url" placeholder="https://..." dir="ltr"></div>
+    <div class="modal-field"><div class="modal-label">ملاحظة للزبون</div><input class="modal-input" id="del-note" placeholder="مثلاً: تم تسليم الفيديو بنجاح"></div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeModal('modal-deliver')">إلغاء</button><button class="modal-submit" onclick="submitDelivery()">تسليم ✓</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-chat-view">
+  <div class="modal-box" style="max-width:600px;max-height:80vh;display:flex;flex-direction:column">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="modal-title" style="margin-bottom:0" id="chat-view-title">💬 المحادثة</div><button class="modal-cancel" onclick="closeModal('modal-chat-view')" style="padding:6px 14px">✕</button></div>
+    <div id="chat-messages-box" style="flex:1;overflow-y:auto;margin-bottom:14px;max-height:360px;padding:10px;background:rgba(255,255,255,.02);border-radius:var(--radius-sm);border:1px solid var(--border)"></div>
+    <div style="display:flex;gap:8px"><input class="modal-input" id="chat-reply-inp" placeholder="اكتب ردك..." style="flex:1"><button class="modal-submit" onclick="sendAdminReply()" style="flex:none;padding:12px 24px">إرسال</button></div>
+  </div>
+</div>
 
 <script>
-/* ══════════════════════════════════════════
-   CONFIG
-══════════════════════════════════════════ */
-const SB_URL  = 'https://sdshemvqevcybvxsdmev.supabase.co';
-const SB_KEY  = 'sb_publishable_fqIU7FCtPJENbr20x_fC-w_EG6jndi3';
-// ← إيميل الـ Super Admin (أنت)
-const SUPER_ADMIN_EMAIL = 'fingrifureadg@gmail.com';
+const SB_URL='https://sdshemvqevcybvxsdmev.supabase.co';
+const SB_KEY='sb_publishable_fqIU7FCtPJENbr20x_fC-w_EG6jndi3';
+const {createClient}=supabase;
+const sb=createClient(SB_URL,SB_KEY,{auth:{flowType:'implicit',persistSession:true,autoRefreshToken:true,storage:window.localStorage}});
 
-const { createClient } = supabase;
-const sb = createClient(SB_URL, SB_KEY, {
-  auth:{ flowType:'implicit', detectSessionInUrl:true, persistSession:true, autoRefreshToken:true }
-});
+let adminUser=null;
+let allOrders=[], allEditors=[], allAssignments=[], allConversations=[];
 
-/* ══════════════════════════════════════════
-   STATE
-══════════════════════════════════════════ */
-let ME = null;          // current admin user object from admin_users table
-let ME_AUTH = null;     // supabase auth user
-let allOrders = [];
-let allUsers  = [];
-let allPorts  = [];
+const PACKAGES = [
+  {num:1,name:'الباقة الأساسية',label:'BASIC / 01'},
+  {num:2,name:'الباقة الاحترافية',label:'PRO / 02'},
+  {num:3,name:'باقة الذكاء الاصطناعي',label:'AI / 03'},
+  {num:4,name:'الباقة النخبة',label:'ELITE / 04'}
+];
+const statusMap={pending:{l:'⏳ قيد المراجعة',c:'pending'},processing:{l:'🔄 جارٍ التنفيذ',c:'processing'},completed:{l:'✓ مكتمل',c:'completed'},cancelled:{l:'✕ ملغي',c:'cancelled'}};
+const assignStatusMap={assigned:{l:'📌 معيّن',c:'assigned'},in_progress:{l:'🔄 قيد التنفيذ',c:'in_progress'},completed:{l:'✓ مكتمل',c:'completed'},cancelled:{l:'✕ ملغي',c:'cancelled'}};
 
-const PERMS_ALL = ['view_orders','update_orders','deliver_video','view_users','manage_portfolio','view_stats'];
+/* ═══ LOGIN ═══ */
+async function adminLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('l-err');
+  if(!email||!pass){err.textContent='أدخل الإيميل وكلمة المرور';return}
+  const btn=document.getElementById('l-btn');
+  btn.disabled=true;btn.textContent='جارٍ الدخول...';
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){err.textContent='خطأ: إيميل أو كلمة مرور غير صحيحة';btn.disabled=false;btn.textContent='تسجيل الدخول';return}
+  // Check if this user is admin
+  const{data:adm}=await sb.from('admin_users').select('*').eq('id',data.user.id).maybeSingle();
+  if(!adm){err.textContent='⚠️ هذا الحساب ليس أدمن';await sb.auth.signOut();btn.disabled=false;btn.textContent='تسجيل الدخول';return}
+  adminUser=data.user;
+  showAdminApp();
+}
+async function adminLogout(){await sb.auth.signOut();location.reload()}
 
-/* ══════════════════════════════════════════
-   INIT
-══════════════════════════════════════════ */
-async function init() {
-  const { data:{ session } } = await sb.auth.getSession();
-  if (session) {
-    await loginWith(session.user);
+function showAdminApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-app').style.display='block';
+  const name=adminUser.user_metadata?.full_name||adminUser.email?.split('@')[0]||'Admin';
+  document.getElementById('sf-avatar').textContent=name.charAt(0).toUpperCase();
+  document.getElementById('sf-name').textContent=name;
+  document.getElementById('sf-email').textContent=adminUser.email;
+  loadAll();
+}
+
+// Auto-login check
+(async()=>{
+  const{data:{session}}=await sb.auth.getSession();
+  if(session?.user){
+    const{data:adm}=await sb.from('admin_users').select('*').eq('id',session.user.id).maybeSingle();
+    if(adm){adminUser=session.user;showAdminApp()}
   }
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) await loginWith(session.user);
-    if (event === 'SIGNED_OUT') { ME = null; ME_AUTH = null; location.reload(); }
-  });
+})();
+
+/* ═══ NAVIGATION ═══ */
+function switchPage(page){
+  document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.trim().includes(getPageLabel(page)))n.classList.add('active')});
+  if(page==='orders')loadOrders();
+  if(page==='showcase')loadShowcase();
+  if(page==='editors')loadEditors();
+  if(page==='assignments')loadAssignments();
+  if(page==='deliver')loadDeliverOrders();
+  if(page==='chat')loadConversations();
 }
+function getPageLabel(p){const m={dashboard:'الرئيسية',orders:'الطلبات',showcase:'فيديوهات العرض',editors:'المونتيرين',assignments:'التعيينات',deliver:'تسليم الفيديو',chat:'الرسائل'};return m[p]||''}
 
-async function loginWith(authUser) {
-  ME_AUTH = authUser;
-  const email = authUser.email;
-
-  // Check if Super Admin
-  if (email === SUPER_ADMIN_EMAIL) {
-    ME = { email, role:'super', name: authUser.user_metadata?.full_name || 'Super Admin', permissions: PERMS_ALL };
-  } else {
-    // Check admin_users table
-    const { data } = await sb.from('admin_users').select('*').eq('email', email).eq('active', true).single();
-    if (!data) {
-      await sb.auth.signOut();
-      showLerr('هذا الحساب ليس له صلاحية دخول اللوحة');
-      return;
-    }
-    ME = data;
-    ME.permissions = data.permissions || [];
-  }
-
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  buildSidebar();
-  updateHeaderUser();
-  showPage('dashboard');
-  loadDashboard();
-}
-
-/* ══════════════════════════════════════════
-   LOGIN UI
-══════════════════════════════════════════ */
-async function doLogin() {
-  const email = document.getElementById('l-email').value.trim();
-  const pass  = document.getElementById('l-pass').value;
-  if (!email || !pass) { showLerr('أدخل الإيميل وكلمة المرور'); return; }
-
-  const btn = document.getElementById('lbtn');
-  btn.textContent = 'جارٍ الدخول...';
-  btn.disabled = true;
-
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-
-  btn.textContent = 'دخول للوحة';
-  btn.disabled = false;
-
-  if (error) { showLerr('إيميل أو كلمة مرور خاطئة'); return; }
-}
-
-function showLerr(msg) {
-  const e = document.getElementById('lerr');
-  e.textContent = msg; e.style.display = 'block';
-  setTimeout(() => e.style.display = 'none', 4000);
-}
-
-async function doLogout() {
-  await sb.auth.signOut();
-}
-
-/* ══════════════════════════════════════════
-   SIDEBAR BUILD (based on role/permissions)
-══════════════════════════════════════════ */
-function buildSidebar() {
-  const p = ME.permissions || [];
-  const isSuper = ME.role === 'super';
-
-  let nav = '';
-
-  if (isSuper || p.includes('view_stats')) {
-    nav += navItem('dashboard','📊','الرئيسية');
-  }
-  if (isSuper || p.includes('view_orders') || p.includes('update_orders')) {
-    nav += navItem('orders','📋','الطلبات','pending-n');
-  }
-  if (isSuper || p.includes('deliver_video')) {
-    nav += navItem('delivery','📤','تسليم الفيديو');
-  }
-  nav += '<div class="sb-sep"></div>';
-  if (isSuper || p.includes('view_users')) {
-    nav += navItem('users','👥','المستخدمون');
-  }
-  if (isSuper || p.includes('manage_portfolio')) {
-    nav += navItem('portfolio','🎬','أعمالي');
-  }
-  nav += navItem('messages','💬','الرسائل');
-  if (isSuper) {
-    nav += '<div class="sb-sep"></div>';
-    nav += navItem('admins','🔑','إدارة الأدمنيه');
-  }
-
-  document.getElementById('sb-nav').innerHTML = nav;
-
-  // chip
-  const chip = document.getElementById('sb-chip');
-  chip.innerHTML = ME.role === 'super'
-    ? '<div class="sb-role-chip chip-super">⭐ Super Admin</div>'
-    : `<div class="sb-role-chip chip-sub">🎬 ${ME.role==='editor'?'مونتير':'مشاهد'}</div>`;
-}
-
-function navItem(id, icon, label, badgeId='') {
-  return `<div class="sbn" id="nav-${id}" onclick="showPage('${id}')">
-    <span class="sbn-icon">${icon}</span> ${label}
-    ${badgeId ? `<span class="sbn-badge" id="${badgeId}" style="display:none"></span>` : ''}
-  </div>`;
-}
-
-function updateHeaderUser() {
-  const name = ME.name || ME.full_name || ME.email?.split('@')[0] || 'Admin';
-  document.getElementById('sb-av').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('sb-uname').textContent = name;
-  document.getElementById('sb-email').textContent = ME.email || '';
-}
-
-/* ══════════════════════════════════════════
-   NAVIGATION
-══════════════════════════════════════════ */
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sbn').forEach(n=>n.classList.remove('active'));
-  const pg = document.getElementById('page-'+name);
-  const nb = document.getElementById('nav-'+name);
-  if (pg) pg.classList.add('active');
-  if (nb) nb.classList.add('active');
-
-  if (name==='orders')    loadOrders();
-  if (name==='users')     loadUsers();
-  if (name==='portfolio') loadPortfolio();
-  if (name==='delivery')  loadDelivery();
-  if (name==='admins')    loadAdmins();
-  if (name==='messages')  loadConversations();
-  if (name==='messages')  loadMessages();
-}
-
-/* ══════════════════════════════════════════
-   DASHBOARD
-══════════════════════════════════════════ */
-async function loadDashboard() {
-  const [{ count:uCnt }, { data:orders }] = await Promise.all([
-    sb.from('profiles').select('*',{count:'exact',head:true}),
-    sb.from('orders').select('*').order('created_at',{ascending:false})
+/* ═══ LOAD ALL ═══ */
+async function loadAll(){
+  const[ordRes,profRes]=await Promise.all([
+    sb.from('orders').select('*').order('created_at',{ascending:false}),
+    sb.from('profiles').select('id',{count:'exact',head:true})
   ]);
-  const ords = orders || [];
-  const pending = ords.filter(o=>o.status==='pending').length;
-  document.getElementById('s-users').textContent   = uCnt||0;
-  document.getElementById('s-orders').textContent  = ords.length;
-  document.getElementById('s-pending').textContent = pending;
-  document.getElementById('s-done').textContent    = ords.filter(o=>o.status==='completed').length;
-
-  const nb = document.getElementById('pending-n');
-  if (nb) { if(pending>0){nb.textContent=pending;nb.style.display='inline';}else nb.style.display='none'; }
-
-  const body = document.getElementById('recent-body');
-  const rec  = ords.slice(0,6);
-  body.innerHTML = rec.length ? renderOrdersTable(rec, true) : emptyState('📭','لا توجد طلبات');
-}
-
-/* ══════════════════════════════════════════
-   ORDERS
-══════════════════════════════════════════ */
-async function loadOrders() {
-  document.getElementById('orders-body').innerHTML = loading();
-  const { data } = await sb.from('orders').select('*').order('created_at',{ascending:false});
-  allOrders = data || [];
-  renderOrders(allOrders);
-}
-
-function filterOrders() {
-  const q  = document.getElementById('o-search').value.toLowerCase();
-  const st = document.getElementById('o-filter').value;
-  renderOrders(allOrders.filter(o =>
-    (!q  || (o.order_id||'').toLowerCase().includes(q) || (o.client_name||'').toLowerCase().includes(q)) &&
-    (!st || o.status === st)
-  ));
-}
-
-function renderOrders(list) {
-  const body = document.getElementById('orders-body');
-  body.innerHTML = list.length ? renderOrdersTable(list,false) : emptyState('📭','لا توجد طلبات');
-}
-
-const stMap = {
-  pending:    '<span class="badge b-pending">⏳ قيد المراجعة</span>',
-  processing: '<span class="badge b-processing">⚙️ جارٍ التنفيذ</span>',
-  completed:  '<span class="badge b-completed">✅ مكتمل</span>',
-  cancelled:  '<span class="badge b-cancelled">❌ ملغي</span>',
-  revision:   '<span class="badge b-revision">✏️ تعديل</span>',
-};
-
-function renderOrdersTable(list, mini) {
-  const canEdit = ME.role==='super' || (ME.permissions||[]).includes('update_orders');
-  const rows = list.map(o => {
-    const fCount = (o.files||[]).length;
-    const filesCell = fCount > 0
-      ? `<button class="btn btn-info btn-sm" onclick='openFilesModal(${JSON.stringify(o).replace(/'/g,"&#39;")})'>📁 ${fCount} ملف</button>`
-      : `<span style="color:var(--muted);font-size:12px">—</span>`;
-    return `<tr>
-    <td><span style="font-family:monospace;font-size:12px;color:var(--accent)">${o.order_id}</span></td>
-    <td>${o.client_name||'—'}</td>
-    <td>${o.package_name||'—'}</td>
+  allOrders=ordRes.data||[];
+  const totalUsers=profRes.count||0;
+  document.getElementById('st-users').textContent=totalUsers;
+  document.getElementById('st-orders').textContent=allOrders.length;
+  document.getElementById('st-pending').textContent=allOrders.filter(o=>o.status==='pending').length;
+  document.getElementById('st-done').textContent=allOrders.filter(o=>o.status==='completed').length;
+  const pendingCount=allOrders.filter(o=>o.status==='pending').length;
+  const badge=document.getElementById('orders-badge');
+  if(pendingCount>0){badge.style.display='inline';badge.textContent=pendingCount}else{badge.style.display='none'}
+  // Recent orders for dashboard
+  const recent=allOrders.slice(0,5);
+  document.getElementById('dash-orders-tbody').innerHTML=recent.length?recent.map(o=>`<tr>
+    <td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td>
+    <td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td>
     <td>${(o.package_price||0).toLocaleString('en-US')} د.ع</td>
-    <td>${filesCell}</td>
-    <td>${stMap[o.status]||o.status}</td>
-    <td style="color:var(--muted);font-size:11px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td>
-    <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
-      <button class="btn btn-ghost btn-sm" onclick='openOrderModal(${JSON.stringify(o).replace(/'/g,"&#39;")})'>👁</button>
-      ${canEdit && !mini ? `
-      <button class="btn btn-ok btn-sm"   onclick="updOrd('${o.id}','completed')">✅</button>
-      <button class="btn btn-info btn-sm" onclick="updOrd('${o.id}','processing')">⚙️</button>
-      <button class="btn btn-warn btn-sm" onclick="updOrd('${o.id}','revision')">✏️</button>
-      <button class="btn btn-red btn-sm"  onclick="updOrd('${o.id}','cancelled')">❌</button>
-      ` : ''}
-    </div></td>
-  </tr>`;
-  }).join('');
-
-  return `<div style="overflow-x:auto"><table class="tbl">
-    <thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الملفات</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+    <td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td>
+    <td style="color:var(--muted);font-size:12px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td>
+  </tr>`).join(''):'<tr><td colspan="6" class="empty-state">لا توجد طلبات بعد</td></tr>';
 }
 
-async function updOrd(id, status) {
-  const { error } = await sb.from('orders').update({status, updated_at:new Date().toISOString()}).eq('id',id);
-  if (error) { toast('خطأ: '+error.message,'err'); return; }
-  const labels = {completed:'مكتمل',processing:'جارٍ التنفيذ',cancelled:'ملغي',revision:'طلب تعديل'};
-  toast('✓ الحالة: '+labels[status],'ok');
-  loadOrders(); loadDashboard();
+/* ═══ ORDERS ═══ */
+async function loadOrders(){
+  const{data}=await sb.from('orders').select('*').order('created_at',{ascending:false});
+  allOrders=data||[];
+  document.getElementById('orders-tbody').innerHTML=allOrders.length?allOrders.map(o=>`<tr>
+    <td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td>
+    <td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td>
+    <td>${(o.package_price||0).toLocaleString('en-US')} د.ع</td>
+    <td>${o.files_count||0} ملف</td>
+    <td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td>
+    <td style="color:var(--muted);font-size:12px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td>
+    <td class="actions-cell">
+      <button class="action-btn" onclick="viewOrder('${o.order_id}')">👁 عرض</button>
+      <select onchange="changeStatus('${o.order_id}',this.value);this.value=''" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:6px 8px;border-radius:6px;font-family:var(--font);cursor:pointer">
+        <option value="">تغيير الحالة</option><option value="pending">قيد المراجعة</option><option value="processing">جارٍ التنفيذ</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option>
+      </select>
+    </td>
+  </tr>`).join(''):'<tr><td colspan="8" class="empty-state">لا توجد طلبات</td></tr>';
 }
 
-function openOrderModal(o) {
-  const typeMap = {classic:'🎬 كلاسيكي', ai:'🤖 ذكاء اصطناعي'};
-  const goalMap = {awareness:'الوعي والشهرة',sales:'المبيعات',engagement:'التفاعل',education:'التعليم',entertainment:'الترفيه',other:'أخرى'};
-  const payMap  = {mastercard:'💳 ماستر الرافدين',zain:'📱 زين كاش'};
-  document.getElementById('m-order-title').textContent = 'طلب ' + o.order_id;
-  document.getElementById('m-order-body').innerHTML = `
-    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;">
-      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">معلومات الطلب</div>
-      ${drow('رقم الطلب',`<span style="font-family:monospace;color:var(--accent)">${o.order_id}</span>`)}
-      ${drow('الحالة', stMap[o.status]||o.status)}
-      ${drow('التاريخ', new Date(o.created_at).toLocaleString('ar-IQ'))}
-    </div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;">
-      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">الزبون</div>
-      ${drow('الاسم', o.client_name||'—')}
-      ${drow('الهاتف', `<span dir="ltr">${o.client_phone||'—'}</span>`)}
-    </div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;">
-      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">الخدمة</div>
-      ${drow('النوع', typeMap[o.type]||o.type||'—')}
-      ${drow('الهدف', goalMap[o.goal]||o.goal||'—')}
-      ${drow('الباقة', o.package_name||'—')}
-      ${drow('المبلغ', (o.package_price||0).toLocaleString('en-US')+' دينار')}
-    </div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;">
-      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">الدفع</div>
-      ${drow('الطريقة', payMap[o.pay_method]||o.pay_method||'—')}
-      ${drow('رقم التحويل', `<span dir="ltr">${o.transfer_id||'—'}</span>`)}
-    </div>
-    ${o.details ? `<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">تفاصيل المونتاج</div><div style="font-size:13px;line-height:1.8">${o.details}</div></div>` : ''}
-    ${o.ref_link ? `<div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">رابط مرجعي</div><a href="${o.ref_link}" target="_blank" style="color:var(--info);font-size:13px" dir="ltr">${o.ref_link}</a></div>` : ''}
-    ${o.video_url ? `<div style="background:rgba(92,184,138,.06);border:1px solid rgba(92,184,138,.2);border-radius:12px;padding:12px;margin-bottom:12px;">
-              <div style="font-size:12px;color:var(--success);font-weight:700;margin-bottom:8px;">🎬 الفيديو المسلّم</div>
-              ${o.video_url.includes('drive.google.com') || o.video_url.includes('docs.google.com') ? `
-                <a href="${o.video_url}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;">
-                  <span style="font-size:18px;">🔗</span> فتح من Google Drive
-                </a>
-              ` : `
-                <a href="${o.video_url}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;">
-                  <span style="font-size:18px;">📥</span> تحميل الفيديو
-                </a>
-              `}
-              ${o.video_note?`<div style="font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">${o.video_note}</div>`:''}
-            </div>` : ''}
-    ${(o.files&&o.files.length) ? renderFilesSection(o.files) : ''}
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-      <button class="btn btn-ok"   onclick="updOrd('${o.id}','completed');closeM('m-order')">✅ تأكيد</button>
-      <button class="btn btn-info" onclick="updOrd('${o.id}','processing');closeM('m-order')">⚙️ بدأ التنفيذ</button>
-      <button class="btn btn-warn" onclick="updOrd('${o.id}','revision');closeM('m-order')">✏️ طلب تعديل</button>
-      <button class="btn btn-red"  onclick="updOrd('${o.id}','cancelled');closeM('m-order')">❌ إلغاء</button>
+async function changeStatus(orderId,newStatus){
+  if(!newStatus)return;
+  await sb.from('orders').update({status:newStatus}).eq('order_id',orderId);
+  loadOrders();loadAll();
+}
+
+function viewOrder(orderId){
+  const o=allOrders.find(x=>x.order_id===orderId);if(!o)return;
+  const files=(o.files||[]).map(f=>`<a href="${f.url}" target="_blank" class="file-chip">${f.type==='video'?'🎬':'🖼️'} ${f.name}</a>`).join('');
+  document.getElementById('order-detail-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><div class="modal-title" style="margin-bottom:0">📋 تفاصيل الطلب</div><button class="modal-cancel" onclick="closeModal('modal-order-detail')" style="padding:6px 14px">✕</button></div>
+    <div class="detail-grid">
+      <div class="detail-item"><div class="di-label">رقم الطلب</div><div class="di-val" style="color:var(--gold);font-family:monospace">${o.order_id}</div></div>
+      <div class="detail-item"><div class="di-label">الحالة</div><div class="di-val"><span class="status-badge ${o.status}">${(statusMap[o.status]||statusMap.pending).l}</span></div></div>
+      <div class="detail-item"><div class="di-label">الزبون</div><div class="di-val">${o.client_name||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">الهاتف</div><div class="di-val" dir="ltr">${o.client_phone||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">النوع</div><div class="di-val">${o.type==='classic'?'🎬 كلاسيكي':'🤖 ذكاء اصطناعي'}</div></div>
+      <div class="detail-item"><div class="di-label">الباقة</div><div class="di-val">${o.package_name||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">المبلغ</div><div class="di-val" style="color:var(--gold)">${(o.package_price||0).toLocaleString('en-US')} د.ع</div></div>
+      <div class="detail-item"><div class="di-label">طريقة الدفع</div><div class="di-val">${o.pay_method||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">رقم التحويل</div><div class="di-val" dir="ltr">${o.transfer_id||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">التاريخ</div><div class="di-val">${new Date(o.created_at).toLocaleString('ar-IQ')}</div></div>
+      ${o.details?`<div class="detail-item full"><div class="di-label">تفاصيل المونتاج</div><div class="di-val" style="font-size:13px;line-height:1.8;font-weight:400">${o.details}</div></div>`:''}
+      ${o.ref_link?`<div class="detail-item full"><div class="di-label">رابط مرجعي</div><div class="di-val"><a href="${o.ref_link}" target="_blank" style="color:var(--gold)">${o.ref_link}</a></div></div>`:''}
+      ${files?`<div class="detail-item full"><div class="di-label">الملفات (${o.files_count||0})</div><div class="file-grid">${files}</div></div>`:''}
+      ${o.pay_screenshot?`<div class="detail-item full"><div class="di-label">إيصال الدفع</div><a href="${o.pay_screenshot}" target="_blank"><img src="${o.pay_screenshot}" style="max-width:200px;border-radius:8px;margin-top:6px"></a></div>`:''}
     </div>`;
-  openM('m-order');
+  openModal('modal-order-detail');
 }
 
-function drow(k,v) {
-  return `<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:var(--muted)">${k}</span><span style="font-weight:600">${v}</span></div>`;
-}
-
-/* ══════════════════════════════════════════
-   USERS
-══════════════════════════════════════════ */
-async function loadUsers() {
-  document.getElementById('users-body').innerHTML = loading();
-  const { data } = await sb.from('profiles').select('*').order('created_at',{ascending:false});
-  allUsers = data || [];
-  renderUsers(allUsers);
-}
-
-function filterUsers() {
-  const q = document.getElementById('u-search').value.toLowerCase();
-  renderUsers(q ? allUsers.filter(u=>(u.full_name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)) : allUsers);
-}
-
-function renderUsers(list) {
-  const body = document.getElementById('users-body');
-  if (!list.length) { body.innerHTML = emptyState('👥','لا يوجد مستخدمون'); return; }
-  const rows = list.map(u => {
-    const init = (u.full_name||u.email||'?').charAt(0).toUpperCase();
-    return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px;">
-        <div class="av" style="background:linear-gradient(135deg,#6ab4e8,#4a90d9);color:#fff">${init}</div>
-        <div><div style="font-weight:600">${u.full_name||'—'}</div></div>
-      </div></td>
-      <td style="color:var(--muted);font-size:12px" dir="ltr">${u.email||'—'}</td>
-      <td style="color:var(--muted);font-size:12px" dir="ltr">${u.phone||'—'}</td>
-      <td style="color:var(--muted);font-size:11px">${new Date(u.created_at).toLocaleDateString('ar-IQ')}</td>
-    </tr>`;
-  }).join('');
-  body.innerHTML = `<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>المستخدم</th><th>الإيميل</th><th>الهاتف</th><th>تاريخ التسجيل</th></tr></thead><tbody>${rows}</tbody></table></div>
-  <div style="padding:10px;text-align:center;font-size:12px;color:var(--muted)">إجمالي: ${list.length} مستخدم</div>`;
-}
-
-/* ══════════════════════════════════════════
-   PORTFOLIO
-══════════════════════════════════════════ */
-async function loadPortfolio() {
-  document.getElementById('portfolio-body').innerHTML = loading();
-  const { data } = await sb.from('portfolio').select('*').order('created_at',{ascending:false});
-  allPorts = data || [];
-  renderPortfolio(allPorts);
-}
-
-function renderPortfolio(list) {
-  const body = document.getElementById('portfolio-body');
-  if (!list.length) { body.innerHTML = emptyState('🎬','لا توجد أعمال بعد','أضف أول عمل من الزر أعلاه'); return; }
-  const catL = {commercial:'إعلاني',social:'سوشيال ميديا',awareness:'وعي وشهرة',ai:'مونتاج AI',other:'أخرى'};
-  body.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
-    ${list.map(item => {
-      const isYT = item.type === 'youtube';
-      const isVid = item.url && /\.(mp4|mov|avi|webm)$/i.test(item.url);
-      let thumb = '';
-      if (isYT) {
-        const m = (item.url||'').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-        const vid = m?m[1]:'';
-        thumb = vid ? `<iframe src="https://www.youtube.com/embed/${vid}?rel=0" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`
-                    : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)">🎬</div>`;
-      } else if (isVid) {
-        thumb = `<video src="${item.url}" style="width:100%;height:100%;object-fit:cover" muted></video>`;
-      } else {
-        thumb = `<img src="${item.url}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover">`;
-      }
-      return `<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .3s;">
-        <div style="aspect-ratio:16/9;background:#0a0a0f;overflow:hidden;">${thumb}</div>
-        <div style="padding:13px;">
-          <div style="font-size:14px;font-weight:600;margin-bottom:3px;">${item.title}</div>
-          <div style="font-size:11px;color:var(--accent);font-weight:500;margin-bottom:8px;">${catL[item.category]||item.category}</div>
-          ${item.description?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.6">${item.description}</div>`:''}
-          <div style="display:flex;gap:6px;">
-            <button class="btn btn-ghost btn-sm" onclick='editPortfolio(${JSON.stringify(item).replace(/'/g,"&#39;")})'>✏️ تعديل</button>
-            <button class="btn btn-red btn-sm" onclick="delPortfolio('${item.id}')">🗑</button>
-          </div>
+/* ═══ SHOWCASE ═══ */
+async function loadShowcase(){
+  const{data}=await sb.from('showcase_videos').select('*');
+  const vids={};if(data)data.forEach(v=>vids[v.package_num]=v);
+  document.getElementById('showcase-grid').innerHTML=PACKAGES.map(pkg=>{
+    const v=vids[pkg.num];
+    return `<div class="showcase-card">
+      <div class="showcase-preview">${v?`<video src="${v.video_url}" muted loop autoplay playsinline></video>`:`<div class="placeholder"><div class="placeholder-icon">🎬</div><div>لا يوجد فيديو</div></div>`}</div>
+      <div class="showcase-info">
+        <div class="showcase-pkg-name">${pkg.label} — ${pkg.name}</div>
+        <div class="showcase-actions">
+          <label class="action-btn gold file-upload-btn">${v?'🔄 تغيير':'📤 رفع فيديو'}<input type="file" accept="video/*" onchange="uploadShowcase(${pkg.num},this.files[0])"></label>
+          ${v?`<button class="action-btn danger" onclick="deleteShowcase(${pkg.num},'${v.id}','${v.video_url}')">🗑️ حذف</button>`:''}
         </div>
-      </div>`;
-    }).join('')}
-  </div>`;
-}
-
-function openPortfolioAdd() { openPortfolioModal(); }
-function editPortfolio(item) { openPortfolioModal(item); }
-
-function openPortfolioModal(item) {
-  document.getElementById('m-port-title').textContent = item ? 'تعديل عمل' : 'إضافة عمل جديد';
-  document.getElementById('p-title').value    = item?.title||'';
-  document.getElementById('p-pkg').value      = item?.package_tag||'';
-  document.getElementById('p-cat').value      = item?.category||'commercial';
-  document.getElementById('p-type').value     = item?.type||'youtube';
-  document.getElementById('p-yturl').value    = item?.type==='youtube'?item?.url||'':'';
-  document.getElementById('p-imgurl').value   = item?.type==='image'?item?.url||'':'';
-  document.getElementById('p-desc').value     = item?.description||'';
-  document.getElementById('p-edit-id').value  = item?.id||'';
-  document.getElementById('p-upload-url').value = item?.type==='upload'?item?.url||'':'';
-  document.getElementById('p-yt-preview').style.display = 'none';
-  document.getElementById('p-prog').style.display = 'none';
-  document.getElementById('p-up-preview').style.display = 'none';
-  togglePType();
-  openM('m-port');
-}
-
-function togglePType() {
-  const t = document.getElementById('p-type').value;
-  document.getElementById('p-yt-g').style.display = t==='youtube' ? 'block':'none';
-  document.getElementById('p-up-g').style.display = t==='upload'  ? 'block':'none';
-  document.getElementById('p-img-g').style.display= t==='image'   ? 'block':'none';
-}
-
-function previewYT() {
-  const url = document.getElementById('p-yturl').value;
-  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-  if (m) {
-    document.getElementById('p-iframe').src = `https://www.youtube.com/embed/${m[1]}?rel=0`;
-    document.getElementById('p-yt-preview').style.display = 'block';
-  }
-}
-
-function handlePortDrop(e) { e.preventDefault(); document.getElementById('p-drop').classList.remove('over'); uploadPortFile({files:e.dataTransfer.files}); }
-
-async function uploadPortFile(input) {
-  const file = input.files?.[0];
-  if (!file) return;
-  if (file.size > 50*1024*1024) { toast('الحجم يتجاوز 50 MB','err'); return; }
-  const ext  = file.name.split('.').pop();
-  const path = `portfolio/${Date.now()}.${ext}`;
-  const prog = document.getElementById('p-prog');
-  const fill = document.getElementById('p-prog-fill');
-  const txt  = document.getElementById('p-prog-txt');
-  prog.style.display='block'; fill.style.width='5%'; fill.style.background='var(--accent)'; txt.textContent='جارٍ الرفع...';
-  const { error } = await sb.storage.from('portfolio-media').upload(path, file, {cacheControl:'3600',upsert:false});
-  if (error) { toast('خطأ: '+error.message,'err'); prog.style.display='none'; return; }
-  const { data:{ publicUrl } } = sb.storage.from('portfolio-media').getPublicUrl(path);
-  document.getElementById('p-upload-url').value = publicUrl;
-  fill.style.width='100%'; fill.style.background='var(--success)'; txt.textContent='✓ تم الرفع';
-  const prev = document.getElementById('p-up-preview');
-  const isVid = /\.(mp4|mov|avi|webm)$/i.test(file.name);
-  prev.innerHTML = isVid
-    ? `<video src="${publicUrl}" controls style="width:100%;max-height:200px;background:#000"></video>`
-    : `<img src="${publicUrl}" style="width:100%;max-height:200px;object-fit:cover">`;
-  prev.style.display='block';
-  toast('✓ تم رفع الملف','ok');
-}
-
-async function savePortfolio() {
-  const title = document.getElementById('p-title').value.trim();
-  const cat   = document.getElementById('p-cat').value;
-  const type  = document.getElementById('p-type').value;
-  const editId= document.getElementById('p-edit-id').value;
-  let url = '';
-  if (type==='youtube') url = document.getElementById('p-yturl').value.trim();
-  else if (type==='upload') url = document.getElementById('p-upload-url').value;
-  else url = document.getElementById('p-imgurl').value.trim();
-  const desc = document.getElementById('p-desc').value.trim();
-
-  if (!title||!url) { toast('العنوان والرابط مطلوبان','err'); return; }
-  const pkgTag = document.getElementById('p-pkg').value;
-  const payload = {title, category:cat, type, url, description:desc, package_tag: pkgTag||null};
-  let error;
-  if (editId) ({ error } = await sb.from('portfolio').update(payload).eq('id',editId));
-  else ({ error } = await sb.from('portfolio').insert({...payload,created_at:new Date().toISOString()}));
-  if (error) { toast('خطأ: '+error.message,'err'); return; }
-  toast('✓ تم الحفظ','ok');
-  closeM('m-port'); loadPortfolio();
-}
-
-async function delPortfolio(id) {
-  if (!confirm('حذف هذا العمل؟')) return;
-  const { error } = await sb.from('portfolio').delete().eq('id',id);
-  if (error) { toast('خطأ','err'); return; }
-  toast('✓ تم الحذف','ok'); loadPortfolio();
-}
-
-/* ══════════════════════════════════════════
-   DELIVERY
-══════════════════════════════════════════ */
-async function loadDelivery() {
-  const { data: orders } = await sb.from('orders').select('*').in('status',['pending','processing','revision']).order('created_at',{ascending:false});
-  const sel = document.getElementById('del-order');
-  sel.innerHTML = '<option value="">— اختر الطلب —</option>';
-  (orders||[]).forEach(o => {
-    const opt = document.createElement('option');
-    opt.value = o.id;
-    opt.dataset.o = JSON.stringify(o);
-    opt.textContent = `${o.order_id} — ${o.client_name||'—'} (${o.package_name||'—'})`;
-    sel.appendChild(opt);
-  });
-
-  const { data: delivered } = await sb.from('orders').select('*').not('video_url','is',null).order('updated_at',{ascending:false});
-  const body = document.getElementById('delivered-body');
-  if (!delivered?.length) { body.innerHTML = emptyState('📭','لا توجد طلبات مسلّمة'); return; }
-  body.innerHTML = `<div style="overflow-x:auto"><table class="tbl">
-    <thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الفيديو</th><th>الحالة</th><th>التاريخ</th></tr></thead>
-    <tbody>${delivered.map(o=>`<tr>
-      <td style="font-family:monospace;color:var(--accent);font-size:12px">${o.order_id}</td>
-      <td>${o.client_name||'—'}</td>
-      <td><a href="${o.video_url}" target="_blank" style="color:var(--info);font-size:12px">🎬 عرض</a></td>
-      <td>${stMap[o.status]||o.status}</td>
-      <td style="font-size:11px;color:var(--muted)">${new Date(o.updated_at||o.created_at).toLocaleDateString('ar-IQ')}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>`;
-}
-
-function onDelOrderChange() {
-  const sel = document.getElementById('del-order');
-  const opt = sel.options[sel.selectedIndex];
-  const info = document.getElementById('del-order-info');
-  if (!opt?.dataset?.o) { info.style.display='none'; return; }
-  const o = JSON.parse(opt.dataset.o);
-  document.getElementById('del-order-details').innerHTML = `
-    ${drow('الزبون',o.client_name||'—')}${drow('الباقة',o.package_name||'—')}
-    ${drow('الهاتف',`<span dir="ltr">${o.client_phone||'—'}</span>`)}
-    ${o.details?drow('التفاصيل',o.details):''}`;
-  info.style.display='block';
-}
-
-function handleDelDrop(e) { e.preventDefault(); document.getElementById('del-drop').classList.remove('over'); uploadDelFile({files:e.dataTransfer.files}); }
-
-async function uploadDelFile(input) {
-  const file = input.files?.[0];
-  if (!file) return;
-  if (file.size > 100*1024*1024) { toast('الحجم يتجاوز 100 MB','err'); return; }
-  const ext  = file.name.split('.').pop();
-  const path = `deliveries/${Date.now()}.${ext}`;
-  const prog = document.getElementById('del-prog');
-  const fill = document.getElementById('del-prog-fill');
-  const txt  = document.getElementById('del-prog-txt');
-  prog.style.display='block'; fill.style.width='5%'; txt.textContent='جارٍ الرفع...';
-  const { error } = await sb.storage.from('portfolio-media').upload(path,file,{cacheControl:'3600',upsert:false});
-  if (error) { toast('خطأ: '+error.message,'err'); prog.style.display='none'; return; }
-  const { data:{ publicUrl } } = sb.storage.from('portfolio-media').getPublicUrl(path);
-  document.getElementById('del-url').value = publicUrl;
-  fill.style.width='100%'; fill.style.background='var(--success)'; txt.textContent='✓ تم — الرابط جاهز';
-  toast('✓ تم رفع الفيديو','ok');
-}
-
-// ══ تبديل تبويبات تسليم الفيديو ══
-let _delTab = 'drive'; // الافتراضي
-
-function delSwitchTab(tab) {
-  _delTab = tab;
-  const drive  = document.getElementById('del-panel-drive');
-  const upload = document.getElementById('del-panel-upload');
-  const btnD   = document.getElementById('del-tab-drive');
-  const btnU   = document.getElementById('del-tab-upload');
-
-  if (tab === 'drive') {
-    drive.style.display  = 'block';
-    upload.style.display = 'none';
-    btnD.style.borderColor = 'var(--accent)';
-    btnD.style.background  = 'var(--gold-glow)';
-    btnD.style.color       = 'var(--accent)';
-    btnU.style.borderColor = 'var(--border)';
-    btnU.style.background  = 'none';
-    btnU.style.color       = 'var(--muted)';
-  } else {
-    drive.style.display  = 'none';
-    upload.style.display = 'block';
-    btnU.style.borderColor = 'var(--accent)';
-    btnU.style.background  = 'var(--gold-glow)';
-    btnU.style.color       = 'var(--accent)';
-    btnD.style.borderColor = 'var(--border)';
-    btnD.style.background  = 'none';
-    btnD.style.color       = 'var(--muted)';
-  }
-}
-
-function delPreviewDrive(url) {
-  const preview = document.getElementById('del-drive-preview');
-  if (!preview) return;
-  const isDrive = url.includes('drive.google.com') || url.includes('docs.google.com');
-  const isValid = url.startsWith('http') && url.length > 20;
-  preview.style.display = (isDrive && isValid) ? 'block' : 'none';
-  if (isDrive && isValid) {
-    preview.innerHTML = '✓ رابط Google Drive صحيح — سيُرسل للزبون مباشرة';
-  }
-}
-
-async function sendDelivery() {
-  const orderId = document.getElementById('del-order').value;
-  const url     = document.getElementById('del-url').value.trim();
-  const note    = document.getElementById('del-note').value.trim();
-  if (!orderId) { toast('اختر الطلب أولاً','err'); return; }
-  if (!url)     { toast('أدخل رابط الفيديو أو ارفع ملفاً','err'); return; }
-  const { error } = await sb.from('orders').update({video_url:url,video_note:note,status:'completed',updated_at:new Date().toISOString()}).eq('id',orderId);
-  if (error) { toast('خطأ: '+error.message,'err'); return; }
-  toast('✓ تم تسليم الفيديو للزبون!','ok');
-  document.getElementById('del-url').value = '';
-  document.getElementById('del-note').value = '';
-  document.getElementById('del-order').value = '';
-  document.getElementById('del-order-info').style.display = 'none';
-  document.getElementById('del-prog').style.display = 'none';
-  loadDelivery(); loadDashboard();
-}
-
-/* ══════════════════════════════════════════
-   ADMINS MANAGEMENT (Super Only)
-══════════════════════════════════════════ */
-async function loadAdmins() {
-  document.getElementById('admins-body').innerHTML = loading();
-  const { data } = await sb.from('admin_users').select('*').order('created_at',{ascending:false});
-  const list = data || [];
-
-  if (!list.length) {
-    document.getElementById('admins-body').innerHTML = emptyState('🔑','لا يوجد مونتيرون بعد','أضف أول مونتير من الزر أعلاه');
-    return;
-  }
-
-  const roleMap = { super:'Super Admin', editor:'مونتير', viewer:'مشاهد' };
-  const rows = list.map(a => {
-    const perms = (a.permissions||[]).length;
-    return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px;">
-        <div class="av" style="background:linear-gradient(135deg,var(--info),#4a90d9);color:#fff">${(a.name||a.email||'?').charAt(0).toUpperCase()}</div>
-        <div><div style="font-weight:600">${a.name||'—'}</div><div style="font-size:11px;color:var(--muted)" dir="ltr">${a.email}</div></div>
-      </div></td>
-      <td><span class="badge ${a.role==='editor'?'b-admin':'b-viewer'}">${roleMap[a.role]||a.role}</span></td>
-      <td><span style="font-size:12px;color:var(--muted)">${perms} صلاحية</span></td>
-      <td><span class="badge ${a.active?'b-active':'b-inactive'}">${a.active?'🟢 نشط':'⏸ موقوف'}</span></td>
-      <td style="font-size:11px;color:var(--muted)">${new Date(a.created_at).toLocaleDateString('ar-IQ')}</td>
-      <td><div style="display:flex;gap:5px;flex-wrap:wrap;">
-        <button class="btn btn-ghost btn-sm" onclick='openEditAdmin(${JSON.stringify(a).replace(/'/g,"&#39;")})'>✏️ تعديل</button>
-        <button class="btn btn-${a.active?'warn':'ok'} btn-sm" onclick="toggleAdminActive('${a.id}',${!a.active})">${a.active?'⏸ إيقاف':'▶️ تفعيل'}</button>
-        <button class="btn btn-red btn-sm" onclick="deleteAdmin('${a.id}')">🗑</button>
-      </div></td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('admins-body').innerHTML = `<div style="overflow-x:auto"><table class="tbl">
-    <thead><tr><th>المونتير</th><th>الدور</th><th>الصلاحيات</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
-}
-
-function openAddAdmin() {
-  document.getElementById('m-admin-title').textContent = 'إضافة مونتير جديد';
-  document.getElementById('a-name').value = '';
-  document.getElementById('a-email').value = '';
-  document.getElementById('a-pass').value = '';
-  document.getElementById('a-role').value = 'editor';
-  document.getElementById('a-edit-id').value = '';
-  document.getElementById('a-result').style.display = 'none';
-  document.getElementById('a-save-btn').textContent = '✅ إنشاء الحساب';
-
-  // Reset permissions to defaults
-  PERMS_ALL.forEach(p => {
-    const cb = document.getElementById('pv-'+p);
-    if (cb) {
-      const defaults = ['view_orders','update_orders','deliver_video','view_stats'];
-      cb.checked = defaults.includes(p);
-      cb.closest('.perm-item').classList.toggle('checked', cb.checked);
-    }
-  });
-
-  // Show password field
-  document.getElementById('a-pass').closest('.fg').style.display = 'block';
-  openM('m-admin');
-}
-
-function openEditAdmin(a) {
-  document.getElementById('m-admin-title').textContent = 'تعديل صلاحيات: ' + (a.name||a.email);
-  document.getElementById('a-name').value  = a.name||'';
-  document.getElementById('a-email').value = a.email||'';
-  document.getElementById('a-role').value  = a.role||'editor';
-  document.getElementById('a-edit-id').value = a.id;
-  document.getElementById('a-result').style.display = 'none';
-  document.getElementById('a-save-btn').textContent = '💾 حفظ التعديلات';
-
-  // Hide password when editing
-  document.getElementById('a-pass').closest('.fg').style.display = 'none';
-
-  const perms = a.permissions || [];
-  PERMS_ALL.forEach(p => {
-    const cb = document.getElementById('pv-'+p);
-    if (cb) { cb.checked = perms.includes(p); cb.closest('.perm-item').classList.toggle('checked', cb.checked); }
-  });
-  openM('m-admin');
-}
-
-function togglePerm(el, val) {
-  const cb = el.querySelector('input[type=checkbox]');
-  cb.checked = !cb.checked;
-  el.classList.toggle('checked', cb.checked);
-}
-
-function toggleAPass() {
-  const inp = document.getElementById('a-pass');
-  inp.type = inp.type==='password' ? 'text' : 'password';
-}
-
-function getSelectedPerms() {
-  return PERMS_ALL.filter(p => {
-    const cb = document.getElementById('pv-'+p);
-    return cb && cb.checked;
-  });
-}
-
-async function saveAdmin() {
-  const name    = document.getElementById('a-name').value.trim();
-  const email   = document.getElementById('a-email').value.trim();
-  const pass    = document.getElementById('a-pass').value;
-  const role    = document.getElementById('a-role').value;
-  const editId  = document.getElementById('a-edit-id').value;
-  const perms   = getSelectedPerms();
-  const result  = document.getElementById('a-result');
-  const btn     = document.getElementById('a-save-btn');
-
-  if (!name || !email) { toast('الاسم والإيميل مطلوبان','err'); return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> جارٍ الحفظ...';
-
-  if (editId) {
-    // Update existing admin
-    const { error } = await sb.from('admin_users').update({ name, role, permissions:perms, updated_at:new Date().toISOString() }).eq('id', editId);
-    btn.disabled = false;
-    btn.textContent = '💾 حفظ التعديلات';
-    if (error) { toast('خطأ: '+error.message,'err'); return; }
-    toast('✓ تم تحديث الصلاحيات','ok');
-    closeM('m-admin'); loadAdmins();
-  } else {
-    // Create new auth account + insert to admin_users
-    if (!pass || pass.length < 8) { toast('كلمة المرور 8 أحرف على الأقل','err'); btn.disabled=false; btn.textContent='✅ إنشاء الحساب'; return; }
-
-    // Step 1: Sign up new user (using service role ideally, but we use regular signup)
-    const { data: signUpData, error: signUpErr } = await sb.auth.signUp({
-      email, password: pass,
-      options:{ data:{ full_name: name } }
-    });
-
-    if (signUpErr) {
-      btn.disabled = false; btn.textContent = '✅ إنشاء الحساب';
-      toast('خطأ في الإنشاء: '+signUpErr.message,'err'); return;
-    }
-
-    // Step 2: Insert to admin_users table
-    const { error: dbErr } = await sb.from('admin_users').insert({
-      email, name, role, permissions: perms,
-      active: true, created_at: new Date().toISOString()
-    });
-
-    btn.disabled = false; btn.textContent = '✅ إنشاء الحساب';
-
-    if (dbErr) { toast('خطأ في الحفظ: '+dbErr.message,'err'); return; }
-
-    result.innerHTML = `<div style="background:rgba(92,184,138,.1);border:1px solid rgba(92,184,138,.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--success);">
-      ✅ تم إنشاء الحساب بنجاح!<br>
-      <span style="color:var(--muted);margin-top:4px;display:block;">الإيميل: <span dir="ltr" style="color:var(--text)">${email}</span></span>
-      <span style="color:var(--muted);">كلمة المرور: <span style="font-family:monospace;color:var(--text)">${pass}</span></span><br>
-      <span style="font-size:11px;color:var(--warn);">⚠️ احفظ هذه البيانات — لن تُعرض مرة أخرى</span>
-    </div>`;
-    result.style.display = 'block';
-    toast('✓ تم إنشاء حساب المونتير','ok');
-    loadAdmins();
-  }
-}
-
-async function toggleAdminActive(id, active) {
-  const { error } = await sb.from('admin_users').update({ active, updated_at:new Date().toISOString() }).eq('id',id);
-  if (error) { toast('خطأ','err'); return; }
-  toast(active ? '✓ تم تفعيل الحساب' : '✓ تم إيقاف الحساب','ok');
-  loadAdmins();
-}
-
-async function deleteAdmin(id) {
-  if (!confirm('حذف هذا المونتير نهائياً؟')) return;
-  const { error } = await sb.from('admin_users').delete().eq('id',id);
-  if (error) { toast('خطأ','err'); return; }
-  toast('✓ تم الحذف','ok'); loadAdmins();
-}
-
-/* ══════════════════════════════════════════
-   FILES VIEWER
-══════════════════════════════════════════ */
-function renderFilesSection(files) {
-  if (!files || !files.length) return '';
-  // Group by episode
-  const byEp = {};
-  files.forEach(f => {
-    const ep = f.episode || 1;
-    if (!byEp[ep]) byEp[ep] = [];
-    byEp[ep].push(f);
-  });
-
-  const epHtml = Object.keys(byEp).sort((a,b)=>a-b).map(ep => {
-    const items = byEp[ep].map(f => {
-      const isVid = f.type === 'video';
-      const size = f.size < 1048576 ? (f.size/1024).toFixed(1)+' KB' : (f.size/1048576).toFixed(1)+' MB';
-      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;">
-        <span style="font-size:18px">${isVid?'🎬':'🖼️'}</span>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</div>
-          <div style="font-size:11px;color:var(--muted)">${size}</div>
-        </div>
-        <a href="${f.url}" target="_blank" class="btn btn-info btn-sm">⬇️ فتح</a>
-        ${isVid ? `<button class="btn btn-ghost btn-sm" onclick="previewMedia('${f.url}','video')">▶️</button>` : `<button class="btn btn-ghost btn-sm" onclick="previewMedia('${f.url}','image')">👁</button>`}
-      </div>`;
-    }).join('');
-    return `<div style="margin-bottom:10px;">
-      <div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;">◆ الحلقة / الفيديو ${ep}</div>
-      ${items}
-    </div>`;
-  }).join('');
-
-  return `<div style="background:rgba(200,169,110,.04);border:1px solid rgba(200,169,110,.2);border-radius:12px;padding:14px;margin-bottom:12px;">
-    <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px;">📁 ملفات الزبون (${files.length} ملف)</div>
-    ${epHtml}
-  </div>`;
-}
-
-function openFilesModal(o) {
-  document.getElementById('m-order-title').textContent = `📁 ملفات طلب ${o.order_id}`;
-  const files = o.files || [];
-  if (!files.length) {
-    document.getElementById('m-order-body').innerHTML = emptyState('📭','لا توجد ملفات مرفوعة','الزبون لم يرفع ملفات بعد');
-  } else {
-    document.getElementById('m-order-body').innerHTML = renderFilesSection(files) + `
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-info" onclick="openOrderModal(${JSON.stringify(o).replace(/'/g,'&#39;')})">👁 تفاصيل الطلب كاملة</button>
-        <button class="btn btn-ok" onclick="updOrd('${o.id}','processing');closeM('m-order')">⚙️ بدأ التنفيذ</button>
-      </div>`;
-  }
-  openM('m-order');
-}
-
-function previewMedia(url, type) {
-  const old = document.getElementById('media-preview-modal');
-  if (old) old.remove();
-  const modal = document.createElement('div');
-  modal.id = 'media-preview-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;';
-  modal.innerHTML = type === 'video'
-    ? `<div style="width:100%;max-width:800px;position:relative;">
-        <video src="${url}" controls autoplay style="width:100%;border-radius:12px;background:#000;max-height:80vh;"></video>
-        <button onclick="this.closest('#media-preview-modal').remove()" style="position:absolute;top:-40px;left:0;background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;">✕ إغلاق</button>
-      </div>`
-    : `<div style="position:relative;text-align:center;">
-        <img src="${url}" style="max-width:90vw;max-height:85vh;border-radius:12px;object-fit:contain;">
-        <button onclick="this.closest('#media-preview-modal').remove()" style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;">✕ إغلاق</button>
-      </div>`;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
-}
-
-/* ══════════════════════════════════════════
-   MODAL HELPERS
-══════════════════════════════════════════ */
-function openM(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
-function closeM(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
-document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click',e=>{ if(e.target===m){ m.classList.remove('open'); document.body.style.overflow=''; }}));
-
-/* ══════════════════════════════════════════
-   UTILS
-══════════════════════════════════════════ */
-function toast(msg, type='ok') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show '+type;
-  setTimeout(()=>t.className='', 3200);
-}
-function loading() { return '<div style="text-align:center;padding:40px"><div class="spin"></div></div>'; }
-function emptyState(ico,txt,sub='') {
-  return `<div class="empty"><div class="empty-ico">${ico}</div><div class="empty-txt">${txt}</div>${sub?`<div style="font-size:12px;margin-top:4px;opacity:.6">${sub}</div>`:''}</div>`;
-}
-
-/* ══════════════════════════════════════════
-   MESSAGING SYSTEM
-══════════════════════════════════════════ */
-/* ══════════════════════════════════════════
-   MESSAGES / CONVERSATIONS
-══════════════════════════════════════════ */
-let _convId = null;
-let _convPoll = null;
-let _convMsgCount = 0;
-let _convList = [];
-
-async function loadConversations() {
-  const el = document.getElementById('conv-list');
-  if (!el) return;
-  el.innerHTML = loading();
-
-  const { data, error } = await sb.from('conversations')
-    .select('*').order('updated_at', { ascending: false });
-
-  if (error) {
-    el.innerHTML = emptyState('⚠️', 'خطأ: ' + error.message);
-    return;
-  }
-
-  _convList = data || [];
-  if (!_convList.length) {
-    el.innerHTML = emptyState('💬', 'لا توجد محادثات بعد');
-    return;
-  }
-
-  el.innerHTML = _convList.map(c => {
-    const name = c.user_name || c.user_email?.split('@')[0] || 'زبون';
-    const active = c.id === _convId;
-    const time = new Date(c.updated_at || c.created_at).toLocaleDateString('ar-IQ');
-    const pkg = c.last_pkg_name
-      ? `<div style="font-size:10px;color:var(--accent)">📦 ${c.last_pkg_name}</div>`
-      : '<div style="font-size:10px;color:var(--muted)">لم يشترِ بعد</div>';
-    return `<div onclick="openConv('${c.id}')"
-      style="padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--border);
-      background:${active ? 'rgba(200,169,110,.08)' : 'transparent'};transition:background .2s;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6ab4e8,#4a90d9);
-          display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;">
-          ${name.charAt(0).toUpperCase()}
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>
-          ${pkg}
-          ${c.last_msg ? `<div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.last_msg}</div>` : ''}
-        </div>
-        <div style="font-size:10px;color:var(--muted);flex-shrink:0;">${time}</div>
       </div>
     </div>`;
   }).join('');
 }
 
-async function openConv(convId) {
-  _convId = convId;
-  _convMsgCount = 0;
-  const conv = _convList.find(c => c.id === convId);
-  if (!conv) return;
-
-  // إظهار panel
-  document.getElementById('chat-placeholder').style.display = 'none';
-  const panel = document.getElementById('chat-panel');
-  panel.style.display = 'flex';
-
-  const name = conv.user_name || conv.user_email?.split('@')[0] || '—';
-  document.getElementById('cp-av').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('cp-name').textContent = name;
-  document.getElementById('cp-info').innerHTML = [
-    conv.user_email ? `<span>✉️ ${conv.user_email}</span>` : '',
-    conv.user_phone ? `<span>📱 ${conv.user_phone}</span>` : ''
-  ].filter(Boolean).join(' | ');
-
-  // بطاقة معلومات الزبون
-  const uc = document.getElementById('cp-user-card');
-  const parts = [];
-  if (conv.last_order_id) parts.push(`🧾 <b>${conv.last_order_id}</b>`);
-  if (conv.last_pkg_name) parts.push(`📦 ${conv.last_pkg_name} — ${(conv.last_pkg_price||0).toLocaleString('en-US')} د.ع`);
-  else parts.push('<span style="color:var(--muted)">📦 لم يشترِ باقة بعد</span>');
-  if (conv.last_order_status) {
-    const st = {pending:'⏳ قيد المراجعة',processing:'⚙️ جارٍ',completed:'✅ مكتمل',cancelled:'❌ ملغي'};
-    parts.push(st[conv.last_order_status] || conv.last_order_status);
+async function uploadShowcase(pkgNum,file){
+  if(!file)return;
+  if(!file.type.startsWith('video/')){alert('يرجى اختيار ملف فيديو');return}
+  const ext=file.name.split('.').pop().toLowerCase();
+  const path=`pkg${pkgNum}/${Date.now()}.${ext}`;
+  // Delete existing first
+  const{data:existing}=await sb.from('showcase_videos').select('id,video_url').eq('package_num',pkgNum).maybeSingle();
+  if(existing){
+    const oldPath=existing.video_url.split('/showcase-videos/')[1];
+    if(oldPath)await sb.storage.from('showcase-videos').remove([decodeURIComponent(oldPath)]);
+    await sb.from('showcase_videos').delete().eq('id',existing.id);
   }
-  uc.innerHTML = parts.join(' &nbsp;|&nbsp; ');
-
-  await _convLoadMsgs();
-
-  // polling
-  if (_convPoll) clearInterval(_convPoll);
-  _convPoll = setInterval(_convLoadMsgs, 3000);
-
-  // تحديث القائمة
-  loadConversations();
+  const{error:upErr}=await sb.storage.from('showcase-videos').upload(path,file,{cacheControl:'3600',upsert:true});
+  if(upErr){alert('خطأ بالرفع: '+upErr.message);return}
+  const{data:urlData}=sb.storage.from('showcase-videos').getPublicUrl(path);
+  await sb.from('showcase_videos').insert({package_num:pkgNum,video_url:urlData.publicUrl,title:PACKAGES.find(p=>p.num===pkgNum)?.name||'',uploaded_by:adminUser.id});
+  loadShowcase();
 }
 
-async function _convLoadMsgs() {
-  if (!_convId) return;
-  const { data: msgs, error } = await sb.from('messages')
-    .select('*').eq('conversation_id', _convId)
-    .order('created_at', { ascending: true });
+async function deleteShowcase(pkgNum,id,url){
+  if(!confirm('حذف فيديو العرض لهذه الباقة؟'))return;
+  const path=url.split('/showcase-videos/')[1];
+  if(path)await sb.storage.from('showcase-videos').remove([decodeURIComponent(path)]);
+  await sb.from('showcase_videos').delete().eq('id',id);
+  loadShowcase();
+}
 
-  if (error) { console.error('msgs error:', error.message); return; }
-  if (!msgs || msgs.length === _convMsgCount) return;
-  _convMsgCount = msgs.length;
+/* ═══ EDITORS ═══ */
+async function loadEditors(){
+  const{data}=await sb.from('editors').select('*').order('created_at',{ascending:false});
+  allEditors=data||[];
+  document.getElementById('editors-tbody').innerHTML=allEditors.length?allEditors.map(e=>`<tr>
+    <td style="font-weight:600">${e.name}</td><td style="color:var(--muted);direction:ltr">${e.email||'—'}</td>
+    <td style="color:var(--muted);direction:ltr">${e.phone||'—'}</td>
+    <td><span class="status-badge ${e.status}">${e.status==='active'?'✓ نشط':'✕ موقف'}</span></td>
+    <td class="actions-cell">
+      <button class="action-btn gold" onclick="editEditor('${e.id}')">✏️ تعديل</button>
+      <button class="action-btn danger" onclick="deleteEditor('${e.id}')">🗑️</button>
+    </td>
+  </tr>`).join(''):'<tr><td colspan="5" class="empty-state">لا يوجد مونتيرين — أضف أول مونتير</td></tr>';
+}
 
-  const el = document.getElementById('cp-msgs');
-  const wasBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
-  el.innerHTML = msgs.map(m => {
-    const admin = m.sender === 'admin';
-    const t = new Date(m.created_at).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' });
-    let media = '';
-    if (m.file_url) {
-      const ext = m.file_url.split('?')[0].toLowerCase();
-      if (/\.(jpg|jpeg|png|gif|webp)$/.test(ext))
-        media = `<br><img src="${m.file_url}" style="max-width:200px;max-height:160px;border-radius:8px;margin-top:5px;cursor:pointer;" onclick="window.open('${m.file_url}')">`;
-      else if (/\.(mp4|mov|webm)$/.test(ext))
-        media = `<br><video src="${m.file_url}" controls style="max-width:220px;border-radius:8px;margin-top:5px;"></video>`;
-      else
-        media = `<br><a href="${m.file_url}" target="_blank" style="color:${admin?'#0a0a0f':' var(--accent)'};font-size:12px;">📎 تحميل الملف</a>`;
+function openEditorModal(editor){
+  document.getElementById('editor-modal-title').textContent=editor?'✏️ تعديل مونتير':'✂️ إضافة مونتير';
+  document.getElementById('edit-editor-id').value=editor?.id||'';
+  document.getElementById('ed-name').value=editor?.name||'';
+  document.getElementById('ed-email').value=editor?.email||'';
+  document.getElementById('ed-phone').value=editor?.phone||'';
+  openModal('modal-editor');
+}
+function editEditor(id){const e=allEditors.find(x=>x.id===id);if(e)openEditorModal(e)}
+async function saveEditor(){
+  const id=document.getElementById('edit-editor-id').value;
+  const name=document.getElementById('ed-name').value.trim();
+  if(!name){alert('أدخل اسم المونتير');return}
+  const data={name,email:document.getElementById('ed-email').value.trim(),phone:document.getElementById('ed-phone').value.trim()};
+  if(id)await sb.from('editors').update(data).eq('id',id);
+  else await sb.from('editors').insert(data);
+  closeModal('modal-editor');loadEditors();
+}
+async function deleteEditor(id){if(!confirm('حذف هذا المونتير؟'))return;await sb.from('editors').delete().eq('id',id);loadEditors()}
+
+/* ═══ ASSIGNMENTS ═══ */
+async function loadAssignments(){
+  const{data}=await sb.from('order_assignments').select('*,editors(name)').order('assigned_at',{ascending:false});
+  allAssignments=data||[];
+  document.getElementById('assign-tbody').innerHTML=allAssignments.length?allAssignments.map(a=>{
+    const st=assignStatusMap[a.status]||assignStatusMap.assigned;
+    return `<tr>
+      <td style="color:var(--gold);font-family:monospace;font-weight:700">${a.order_id}</td>
+      <td style="font-weight:600">${a.editors?.name||'—'}</td>
+      <td><span class="status-badge ${st.c}">${st.l}</span></td>
+      <td style="color:var(--muted);font-size:12px">${a.notes||'—'}</td>
+      <td style="color:var(--muted);font-size:12px">${new Date(a.assigned_at).toLocaleDateString('ar-IQ')}</td>
+      <td class="actions-cell">
+        <select onchange="changeAssignStatus('${a.id}',this.value);this.value=''" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:6px;border-radius:6px;font-family:var(--font);cursor:pointer">
+          <option value="">تغيير</option><option value="assigned">معيّن</option><option value="in_progress">قيد التنفيذ</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="6" class="empty-state">لا توجد تعيينات بعد</td></tr>';
+}
+
+async function openAssignModal(){
+  if(!allOrders.length)await loadOrders();
+  if(!allEditors.length)await loadEditors();
+  const oSel=document.getElementById('as-order');
+  oSel.innerHTML='<option value="">اختر الطلب...</option>'+allOrders.map(o=>`<option value="${o.order_id}">${o.order_id} — ${o.client_name||'?'} (${o.package_name||'?'})</option>`).join('');
+  const eSel=document.getElementById('as-editor');
+  eSel.innerHTML='<option value="">اختر المونتير...</option>'+allEditors.filter(e=>e.status==='active').map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('as-notes').value='';
+  openModal('modal-assign');
+}
+async function saveAssignment(){
+  const orderId=document.getElementById('as-order').value;
+  const editorId=document.getElementById('as-editor').value;
+  if(!orderId||!editorId){alert('اختر الطلب والمونتير');return}
+  await sb.from('order_assignments').insert({order_id:orderId,editor_id:editorId,assigned_by:adminUser.id,notes:document.getElementById('as-notes').value.trim()});
+  closeModal('modal-assign');loadAssignments();
+}
+async function changeAssignStatus(id,val){
+  if(!val)return;
+  const upd={status:val};
+  if(val==='completed')upd.completed_at=new Date().toISOString();
+  await sb.from('order_assignments').update(upd).eq('id',id);
+  loadAssignments();
+}
+
+/* ═══ DELIVER ═══ */
+async function loadDeliverOrders(){
+  if(!allOrders.length){const{data}=await sb.from('orders').select('*').order('created_at',{ascending:false});allOrders=data||[]}
+  document.getElementById('deliver-tbody').innerHTML=allOrders.map(o=>`<tr>
+    <td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td>
+    <td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td>
+    <td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td>
+    <td>${o.video_url?`<a href="${o.video_url}" target="_blank" style="color:var(--success);font-size:12px">✓ تم التسليم</a>`:'<span style="color:var(--muted);font-size:12px">—</span>'}</td>
+    <td><button class="action-btn success" onclick="openDeliverModal('${o.order_id}')">📦 تسليم</button></td>
+  </tr>`).join('');
+}
+function openDeliverModal(orderId){
+  document.getElementById('del-order-id').value=orderId;
+  document.getElementById('del-url').value='';
+  document.getElementById('del-note').value='';
+  openModal('modal-deliver');
+}
+async function submitDelivery(){
+  const orderId=document.getElementById('del-order-id').value;
+  const url=document.getElementById('del-url').value.trim();
+  if(!url){alert('أدخل رابط الفيديو');return}
+  await sb.from('orders').update({video_url:url,video_note:document.getElementById('del-note').value.trim(),status:'completed'}).eq('order_id',orderId);
+  closeModal('modal-deliver');loadDeliverOrders();loadAll();
+}
+
+/* ═══ CHAT ═══ */
+let currentConvId=null;
+async function loadConversations(){
+  const{data}=await sb.from('conversations').select('*').order('updated_at',{ascending:false});
+  allConversations=data||[];
+  document.getElementById('chat-tbody').innerHTML=allConversations.length?allConversations.map(c=>`<tr>
+    <td style="font-weight:600">${c.user_name||'—'}</td>
+    <td style="color:var(--muted);font-size:12px">${c.user_email||'—'}</td>
+    <td style="color:var(--muted);font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.last_msg||'—'}</td>
+    <td><span class="status-badge ${c.status==='open'?'active':'inactive'}">${c.status==='open'?'🟢 مفتوح':'🔴 مغلق'}</span></td>
+    <td style="color:var(--muted);font-size:12px">${c.updated_at?new Date(c.updated_at).toLocaleString('ar-IQ'):'—'}</td>
+    <td class="actions-cell">
+      <button class="action-btn gold" onclick="openChatView('${c.id}','${c.user_name||''}')">💬 عرض</button>
+      <button class="action-btn ${c.status==='open'?'danger':'success'}" onclick="toggleConvStatus('${c.id}','${c.status}')">${c.status==='open'?'🔒 إغلاق':'🔓 فتح'}</button>
+    </td>
+  </tr>`).join(''):'<tr><td colspan="6" class="empty-state">لا توجد محادثات</td></tr>';
+}
+
+async function openChatView(convId,userName){
+  currentConvId=convId;
+  document.getElementById('chat-view-title').textContent='💬 محادثة مع '+userName;
+  const{data:msgs}=await sb.from('messages').select('*').eq('conversation_id',convId).order('created_at',{ascending:true});
+  const box=document.getElementById('chat-messages-box');
+  box.innerHTML=(msgs||[]).map(m=>{
+    const isUser=m.sender==='user';
+    const t=new Date(m.created_at).toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
+    let media='';
+    if(m.file_url){
+      const isImg=/\.(jpg|jpeg|png|gif|webp)$/i.test(m.file_url);
+      media=isImg?`<img src="${m.file_url}" style="max-width:160px;border-radius:8px;margin-top:4px;display:block">`:`<a href="${m.file_url}" target="_blank" style="color:var(--gold);font-size:12px;display:block;margin-top:4px">📎 ملف مرفق</a>`;
     }
-    const content = m.content === '📎 ملف' ? '' : m.content;
-    return `<div style="display:flex;justify-content:${admin ? 'flex-end' : 'flex-start'};">
-      <div style="max-width:76%;padding:9px 13px;font-size:13px;line-height:1.65;
-        border-radius:${admin ? '13px 4px 13px 13px' : '4px 13px 13px 13px'};
-        background:${admin ? 'linear-gradient(135deg,var(--accent),#b8954a)' : 'rgba(255,255,255,.07)'};
-        color:${admin ? '#0a0a0f' : 'var(--text)'};
-        border:${admin ? 'none' : '1px solid var(--border)'};">
-        ${content}${media}
-        <div style="font-size:9px;opacity:.5;margin-top:3px;">${t}</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  if (wasBottom || msgs.length <= 3) el.scrollTop = el.scrollHeight;
+    return `<div style="padding:8px 12px;margin-bottom:6px;border-radius:10px;max-width:80%;font-size:13px;line-height:1.7;${isUser?'background:rgba(255,255,255,.04);border:1px solid var(--border);align-self:flex-start':'background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;margin-right:auto;margin-left:0'}">${m.content!=='📎 ملف'?m.content:''}${media}<div style="font-size:9px;opacity:.5;margin-top:3px">${t} — ${isUser?'الزبون':'أنت'}</div></div>`;
+  }).join('')||'<div class="empty-state">لا توجد رسائل</div>';
+  box.scrollTop=box.scrollHeight;
+  openModal('modal-chat-view');
 }
 
-let _adminFile = null;
-
-function adminFileSelected(inp) {
-  const file = inp.files[0];
-  if (!file) return;
-  // تحذير لو الحجم أكبر من 45MB
-  const maxSize = 47185920; // 45MB
-  if (file.size > maxSize) {
-    toast(`حجم الملف ${(file.size/1024/1024).toFixed(1)}MB كبير جداً — الحد 45MB`, 'err');
-    inp.value = '';
-    return;
-  }
-  _adminFile = file;
-  const prev = document.getElementById('admin-file-prev');
-  const name = document.getElementById('admin-file-name');
-  if (prev) prev.style.display = 'flex';
-  if (name) name.textContent = `${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
+async function sendAdminReply(){
+  const inp=document.getElementById('chat-reply-inp');
+  const txt=inp.value.trim();
+  if(!txt||!currentConvId)return;
+  inp.value='';
+  await sb.from('messages').insert({conversation_id:currentConvId,sender:'support',content:txt});
+  await sb.from('conversations').update({last_msg:txt.slice(0,80),updated_at:new Date().toISOString()}).eq('id',currentConvId);
+  openChatView(currentConvId,document.getElementById('chat-view-title').textContent.replace('💬 محادثة مع ',''));
 }
 
-function adminCancelFile() {
-  _adminFile = null;
-  const prev = document.getElementById('admin-file-prev');
-  const inp  = document.getElementById('admin-file-inp');
-  if (prev) prev.style.display = 'none';
-  if (inp)  inp.value = '';
-}
-
-async function _adminUploadFile(file) {
-  const ext  = file.name.split('.').pop();
-  const path = `chat/${_convId}/admin_${Date.now()}.${ext}`;
-  const { error } = await sb.storage.from('chat-files').upload(path, file, { cacheControl:'3600', upsert:false });
-  if (error) return null;
-  const { data } = sb.storage.from('chat-files').getPublicUrl(path);
-  return data.publicUrl;
-}
-
-async function adminSendMsg() {
-  if (!_convId) return;
-  const inp = document.getElementById('admin-reply');
-  const txt = inp.value.trim();
-  if (!txt && !_adminFile) return;
-
-  inp.value = '';
-  inp.style.height = 'auto';
-
-  let fileUrl = null;
-  if (_adminFile) {
-    fileUrl = await _adminUploadFile(_adminFile);
-    adminCancelFile();
-  }
-
-  const msgData = { conversation_id: _convId, sender: 'admin', content: txt || '📎 ملف' };
-  if (fileUrl) msgData.file_url = fileUrl;
-
-  const { error } = await sb.from('messages').insert(msgData);
-  if (error) { toast('خطأ: ' + error.message, 'err'); return; }
-
-  await sb.from('conversations').update({
-    last_msg: (txt || '📎 ملف').slice(0, 80),
-    updated_at: new Date().toISOString()
-  }).eq('id', _convId);
-
-  _convMsgCount = 0;
-  await _convLoadMsgs();
+async function toggleConvStatus(id,current){
+  const newStatus=current==='open'?'closed':'open';
+  await sb.from('conversations').update({status:newStatus}).eq('id',id);
   loadConversations();
 }
 
-async function closeChat() {
-  if (!_convId) return;
-  await sb.from('conversations').update({ status: 'closed', updated_at: new Date().toISOString() }).eq('id', _convId);
-  _convId = null;
-  _convMsgCount = 0;
-  if (_convPoll) { clearInterval(_convPoll); _convPoll = null; }
-  document.getElementById('chat-placeholder').style.display = 'flex';
-  document.getElementById('chat-panel').style.display = 'none';
-  toast('✓ تم إغلاق المحادثة', 'ok');
-  loadConversations();
-}
-
-/* ══════════════════════════════════════════
-   BOOT
-══════════════════════════════════════════ */
-init();
-// تحديث قائمة المحادثات كل 8 ثواني تلقائياً
-setInterval(() => {
-  const page = document.getElementById('page-messages');
-  if (page && page.style.display !== 'none') loadConversations();
-}, 8000);
+/* ═══ MODALS ═══ */
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-bg').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')})});
 </script>
 </body>
 </html>
