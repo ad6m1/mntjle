@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منتجلي — لوحة تحكم الأدمن</title>
+<title>منتجلي — لوحة التحكم</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -16,24 +16,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-i{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#080810;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
 
-/* ═══ LOGIN SCREEN ═══ */
+/* LOGIN */
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(218,175,90,.05) 0%,transparent 60%)}
 .login-card{background:var(--surface-solid);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:100%;max-width:420px;text-align:center;animation:fadeUp .5s var(--ease)}
 .login-logo{font-family:var(--display);font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
 .login-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
 .login-field{width:100%;background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-family:var(--font);font-size:14px;margin-bottom:14px;transition:all .3s var(--ease);direction:ltr;text-align:left}
-.login-field:focus{outline:none;border-color:rgba(218,175,90,.4);box-shadow:0 0 0 3px rgba(218,175,90,.06)}
-.login-field::placeholder{color:var(--muted)}
+.login-field:focus{outline:none;border-color:rgba(218,175,90,.4);box-shadow:0 0 0 3px rgba(218,175,90,.06)}.login-field::placeholder{color:var(--muted)}
 .login-btn{width:100%;background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:14px;border-radius:var(--radius-sm);font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:all .35s var(--ease);margin-top:8px}
-.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(218,175,90,.35)}
-.login-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(218,175,90,.35)}.login-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .login-err{color:var(--danger);font-size:13px;margin-top:12px;min-height:20px}
 
-/* ═══ ADMIN LAYOUT ═══ */
+/* LAYOUT */
 #admin-app{display:none;min-height:100vh}
 .admin-sidebar{position:fixed;right:0;top:0;width:260px;height:100vh;background:var(--surface-solid);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
 .sidebar-logo{font-family:var(--display);font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:28px 24px 8px;text-align:center}
 .sidebar-role{text-align:center;font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-dim);display:inline-block;padding:3px 14px;border-radius:20px;margin:4px auto 24px;border:1px solid rgba(218,175,90,.15)}
+.sidebar-role.editor-role{color:var(--info);background:rgba(106,180,232,.08);border-color:rgba(106,180,232,.15)}
 .sidebar-nav{flex:1;padding:0 12px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .25s var(--ease);margin-bottom:4px;border:1px solid transparent}
 .nav-item:hover{background:rgba(255,255,255,.03);color:var(--text)}
@@ -43,31 +42,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sidebar-footer{padding:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .sidebar-footer .sf-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b89540);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#080810;flex-shrink:0}
 .sidebar-footer .sf-info{flex:1;min-width:0}.sf-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-email{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sf-logout{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px;transition:color .2s}.sf-logout:hover{color:var(--danger)}
-
+.sf-logout{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px}.sf-logout:hover{color:var(--danger)}
 .admin-main{margin-right:260px;padding:32px 36px;min-height:100vh}
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px}
 .page-title{font-family:var(--display);font-size:26px;font-weight:800;display:flex;align-items:center;gap:10px}
-.refresh-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:500;transition:all .25s var(--ease);display:flex;align-items:center;gap:6px}
-.refresh-btn:hover{border-color:var(--border-hover);color:var(--text)}
-
-/* ═══ STATS CARDS ═══ */
+.refresh-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:500;transition:all .25s var(--ease);display:flex;align-items:center;gap:6px}.refresh-btn:hover{border-color:var(--border-hover);color:var(--text)}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px;transition:all .3s var(--ease)}
-.stat-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px;transition:all .3s var(--ease)}.stat-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
 .stat-card .sc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.stat-card .sc-icon.green{background:rgba(66,214,138,.08);color:var(--success)}
-.stat-card .sc-icon.gold{background:var(--gold-dim);color:var(--gold)}
-.stat-card .sc-icon.blue{background:rgba(106,180,232,.08);color:var(--info)}
-.stat-card .sc-icon.red{background:rgba(232,88,88,.08);color:var(--danger)}
+.sc-icon.green{background:rgba(66,214,138,.08);color:var(--success)}.sc-icon.gold{background:var(--gold-dim);color:var(--gold)}.sc-icon.blue{background:rgba(106,180,232,.08);color:var(--info)}.sc-icon.red{background:rgba(232,88,88,.08);color:var(--danger)}
 .stat-card .sc-val{font-family:var(--display);font-size:32px;font-weight:900;color:var(--gold)}.stat-card .sc-label{font-size:12px;color:var(--muted);margin-top:2px}
-
-/* ═══ PAGE SECTIONS ═══ */
-.page-section{display:none;animation:fadeUp .4s var(--ease)}
-.page-section.active{display:block}
-
-/* ═══ TABLE ═══ */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.page-section{display:none;animation:fadeUp .4s var(--ease)}.page-section.active{display:block}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;overflow-x:auto}
 .table-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .table-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
 table{width:100%;border-collapse:collapse}
@@ -75,186 +61,87 @@ th{text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-trans
 td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
 tr:hover td{background:rgba(255,255,255,.015)}
 .status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
-.status-badge.pending{background:rgba(218,175,90,.1);color:var(--gold)}
-.status-badge.processing{background:rgba(106,180,232,.1);color:var(--info)}
-.status-badge.completed{background:rgba(66,214,138,.1);color:var(--success)}
-.status-badge.cancelled{background:rgba(232,88,88,.1);color:var(--danger)}
-.status-badge.assigned{background:rgba(106,180,232,.1);color:var(--info)}
-.status-badge.in_progress{background:rgba(218,175,90,.1);color:var(--gold)}
-.status-badge.active{background:rgba(66,214,138,.1);color:var(--success)}
-.status-badge.inactive{background:rgba(232,88,88,.1);color:var(--danger)}
-.action-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:11px;transition:all .2s var(--ease);white-space:nowrap}
-.action-btn:hover{border-color:var(--border-hover);color:var(--text)}
-.action-btn.gold{border-color:rgba(218,175,90,.2);color:var(--gold)}
-.action-btn.gold:hover{background:var(--gold-dim)}
-.action-btn.danger{border-color:rgba(232,88,88,.15);color:var(--danger)}
-.action-btn.danger:hover{background:rgba(232,88,88,.06)}
-.action-btn.success{border-color:rgba(66,214,138,.15);color:var(--success)}
-.action-btn.success:hover{background:rgba(66,214,138,.06)}
+.status-badge.pending{background:rgba(218,175,90,.1);color:var(--gold)}.status-badge.processing,.status-badge.assigned,.status-badge.in_progress{background:rgba(106,180,232,.1);color:var(--info)}.status-badge.completed{background:rgba(66,214,138,.1);color:var(--success)}.status-badge.cancelled,.status-badge.inactive{background:rgba(232,88,88,.1);color:var(--danger)}.status-badge.active{background:rgba(66,214,138,.1);color:var(--success)}
+.action-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:11px;transition:all .2s var(--ease);white-space:nowrap}.action-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.action-btn.gold{border-color:rgba(218,175,90,.2);color:var(--gold)}.action-btn.gold:hover{background:var(--gold-dim)}
+.action-btn.danger{border-color:rgba(232,88,88,.15);color:var(--danger)}.action-btn.danger:hover{background:rgba(232,88,88,.06)}
+.action-btn.success{border-color:rgba(66,214,138,.15);color:var(--success)}.action-btn.success:hover{background:rgba(66,214,138,.06)}
 .actions-cell{display:flex;gap:6px;flex-wrap:wrap}
-.add-btn{background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:8px 20px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;transition:all .3s var(--ease);display:flex;align-items:center;gap:6px}
-.add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(218,175,90,.3)}
+.add-btn{background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:8px 20px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;transition:all .3s var(--ease);display:flex;align-items:center;gap:6px}.add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(218,175,90,.3)}
 .empty-state{text-align:center;padding:48px;color:var(--muted);font-size:14px}
-
-/* ═══ SHOWCASE MANAGER ═══ */
 .showcase-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:24px}
-.showcase-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .3s var(--ease)}
-.showcase-card:hover{border-color:var(--border-hover)}
+.showcase-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .3s var(--ease)}.showcase-card:hover{border-color:var(--border-hover)}
 .showcase-preview{aspect-ratio:9/14;max-height:260px;background:#0a0a14;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .showcase-preview video{width:100%;height:100%;object-fit:cover}
-.showcase-preview .placeholder{color:var(--muted);font-size:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
-.showcase-preview .placeholder-icon{font-size:36px;opacity:.3}
-.showcase-info{padding:16px}
-.showcase-pkg-name{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:10px;color:var(--gold)}
-.showcase-actions{display:flex;gap:8px}
-.file-upload-btn{position:relative;overflow:hidden;cursor:pointer}
-.file-upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-
-/* ═══ MODAL ═══ */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:2000;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(12px)}
-.modal-bg.open{display:flex;animation:fadeIn .2s var(--ease)}
+.showcase-preview .placeholder{color:var(--muted);font-size:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}.placeholder-icon{font-size:36px;opacity:.3}
+.showcase-info{padding:16px}.showcase-pkg-name{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:10px;color:var(--gold)}.showcase-actions{display:flex;gap:8px}
+.file-upload-btn{position:relative;overflow:hidden;cursor:pointer}.file-upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:2000;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(12px)}.modal-bg.open{display:flex;animation:fadeIn .2s var(--ease)}
 .modal-box{background:var(--surface-solid);border:1px solid var(--border);border-radius:16px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;padding:32px}
 .modal-title{font-family:var(--display);font-size:20px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.modal-field{margin-bottom:16px}
-.modal-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.modal-field{margin-bottom:16px}.modal-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
 .modal-input{width:100%;background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:var(--text);font-family:var(--font);font-size:14px;transition:all .3s var(--ease)}
-.modal-input:focus{outline:none;border-color:rgba(218,175,90,.4);box-shadow:0 0 0 3px rgba(218,175,90,.06)}
-.modal-input::placeholder{color:var(--muted)}
+.modal-input:focus{outline:none;border-color:rgba(218,175,90,.4);box-shadow:0 0 0 3px rgba(218,175,90,.06)}.modal-input::placeholder{color:var(--muted)}
 select.modal-input{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23605e6e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center}
+select.modal-input option{background:var(--surface-solid);color:var(--text)}
 .modal-btns{display:flex;gap:10px;margin-top:24px}
-.modal-submit{flex:1;background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:13px;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .3s var(--ease)}
-.modal-submit:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(218,175,90,.3)}
-.modal-submit:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.modal-cancel{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:13px 24px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all .25s var(--ease)}
-.modal-cancel:hover{color:var(--text);border-color:var(--muted)}
-
-/* ═══ ORDER DETAIL ═══ */
+.modal-submit{flex:1;background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;border:none;padding:13px;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .3s var(--ease)}.modal-submit:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(218,175,90,.3)}.modal-submit:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.modal-cancel{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:13px 24px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all .25s var(--ease)}.modal-cancel:hover{color:var(--text);border-color:var(--muted)}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
-.detail-item{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
-.detail-item .di-label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600}.detail-item .di-val{font-size:14px;font-weight:600}
-.detail-item.full{grid-column:1/-1}
-.file-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.file-chip{background:var(--gold-dim);border:1px solid rgba(218,175,90,.1);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--gold);text-decoration:none;transition:all .2s}.file-chip:hover{background:rgba(218,175,90,.12)}
-
-@media(max-width:900px){
-  .admin-sidebar{width:220px}.admin-main{margin-right:220px}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}.showcase-grid{grid-template-columns:repeat(2,1fr)}
-  .detail-grid{grid-template-columns:1fr}
-}
-@media(max-width:640px){
-  .admin-sidebar{display:none}.admin-main{margin-right:0}
-  .stats-grid{grid-template-columns:1fr}.showcase-grid{grid-template-columns:1fr}
-}
+.detail-item{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}.detail-item .di-label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600}.detail-item .di-val{font-size:14px;font-weight:600}.detail-item.full{grid-column:1/-1}
+.file-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.file-chip{background:var(--gold-dim);border:1px solid rgba(218,175,90,.1);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--gold);text-decoration:none;transition:all .2s}.file-chip:hover{background:rgba(218,175,90,.12)}
+.hint-box{background:rgba(106,180,232,.04);border:1px solid rgba(106,180,232,.12);border-radius:var(--radius-sm);padding:14px 18px;font-size:12px;color:var(--info);line-height:1.8;margin-bottom:20px}
+@media(max-width:900px){.admin-sidebar{width:220px}.admin-main{margin-right:220px}.stats-grid{grid-template-columns:repeat(2,1fr)}.showcase-grid{grid-template-columns:repeat(2,1fr)}.detail-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.admin-sidebar{display:none}.admin-main{margin-right:0}.stats-grid{grid-template-columns:1fr}.showcase-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">منتجلي</div>
-    <div style="font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-dim);display:inline-block;padding:3px 14px;border-radius:20px;margin-bottom:20px;border:1px solid rgba(218,175,90,.15)">🔐 لوحة الأدمن</div>
-    <div class="login-sub">تسجيل دخول مخصص للمدير فقط</div>
+    <div style="font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-dim);display:inline-block;padding:3px 14px;border-radius:20px;margin-bottom:20px;border:1px solid rgba(218,175,90,.15)">🔐 لوحة التحكم</div>
+    <div class="login-sub">تسجيل دخول للمدير أو المونتير</div>
     <input class="login-field" type="email" id="l-email" placeholder="الإيميل" autocomplete="email">
-    <input class="login-field" type="password" id="l-pass" placeholder="كلمة المرور" autocomplete="current-password">
-    <button class="login-btn" id="l-btn" onclick="adminLogin()">تسجيل الدخول</button>
+    <input class="login-field" type="password" id="l-pass" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" id="l-btn" onclick="doLogin()">تسجيل الدخول</button>
     <div class="login-err" id="l-err"></div>
   </div>
 </div>
 
-<!-- ═══ ADMIN APP ═══ -->
 <div id="admin-app">
   <div class="admin-sidebar">
     <div class="sidebar-logo">منتجلي</div>
-    <div style="text-align:center"><span class="sidebar-role">🛡️ مدير</span></div>
-    <nav class="sidebar-nav">
-      <div class="nav-item active" onclick="switchPage('dashboard')"><span class="nav-icon">📊</span> الرئيسية</div>
-      <div class="nav-item" onclick="switchPage('orders')"><span class="nav-icon">📋</span> الطلبات <span class="nav-badge" id="orders-badge" style="display:none">0</span></div>
-      <div class="nav-item" onclick="switchPage('showcase')"><span class="nav-icon">🎬</span> فيديوهات العرض</div>
-      <div class="nav-item" onclick="switchPage('editors')"><span class="nav-icon">✂️</span> المونتيرين</div>
-      <div class="nav-item" onclick="switchPage('assignments')"><span class="nav-icon">📌</span> التعيينات</div>
-      <div class="nav-item" onclick="switchPage('deliver')"><span class="nav-icon">📦</span> تسليم الفيديو</div>
-      <div class="nav-item" onclick="switchPage('chat')"><span class="nav-icon">💬</span> الرسائل</div>
-    </nav>
+    <div style="text-align:center"><span class="sidebar-role" id="sidebar-role">🛡️ مدير</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
     <div class="sidebar-footer">
       <div class="sf-avatar" id="sf-avatar">A</div>
-      <div class="sf-info"><div class="sf-name" id="sf-name">Admin</div><div class="sf-email" id="sf-email">admin@...</div></div>
-      <button class="sf-logout" onclick="adminLogout()" title="خروج">⏻</button>
+      <div class="sf-info"><div class="sf-name" id="sf-name">—</div><div class="sf-email" id="sf-email">—</div></div>
+      <button class="sf-logout" onclick="doLogout()" title="خروج">⏻</button>
     </div>
   </div>
-
-  <div class="admin-main">
-    <!-- DASHBOARD -->
-    <div class="page-section active" id="page-dashboard">
-      <div class="page-header"><div class="page-title">📊 نظرة عامة</div><button class="refresh-btn" onclick="loadAll()">🔄 تحديث</button></div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="sc-icon gold">👥</div><div><div class="sc-val" id="st-users">0</div><div class="sc-label">حساب مسجّل</div></div></div>
-        <div class="stat-card"><div class="sc-icon blue">📋</div><div><div class="sc-val" id="st-orders">0</div><div class="sc-label">إجمالي الطلبات</div></div></div>
-        <div class="stat-card"><div class="sc-icon gold">⏳</div><div><div class="sc-val" id="st-pending">0</div><div class="sc-label">قيد المراجعة</div></div></div>
-        <div class="stat-card"><div class="sc-icon green">✓</div><div><div class="sc-val" id="st-done">0</div><div class="sc-label">مكتملة</div></div></div>
-      </div>
-      <div class="table-wrap"><div class="table-head"><div class="table-title">📋 آخر الطلبات</div><button class="action-btn" onclick="switchPage('orders')">عرض الكل</button></div><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="dash-orders-tbody"></tbody></table></div>
-    </div>
-
-    <!-- ORDERS -->
-    <div class="page-section" id="page-orders">
-      <div class="page-header"><div class="page-title">📋 الطلبات</div><button class="refresh-btn" onclick="loadOrders()">🔄 تحديث</button></div>
-      <div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الملفات</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="orders-tbody"></tbody></table></div>
-    </div>
-
-    <!-- SHOWCASE -->
-    <div class="page-section" id="page-showcase">
-      <div class="page-header"><div class="page-title">🎬 فيديوهات العرض</div></div>
-      <p style="color:var(--muted);font-size:13px;margin-bottom:8px">ارفع فيديو لكل باقة — يظهر تلقائياً على الموقع فوق الباقة المخصصة.</p>
-      <div class="showcase-grid" id="showcase-grid"></div>
-    </div>
-
-    <!-- EDITORS -->
-    <div class="page-section" id="page-editors">
-      <div class="page-header"><div class="page-title">✂️ المونتيرين</div><button class="add-btn" onclick="openEditorModal()">+ إضافة مونتير</button></div>
-      <div class="table-wrap"><table><thead><tr><th>الاسم</th><th>الإيميل</th><th>الهاتف</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="editors-tbody"></tbody></table></div>
-    </div>
-
-    <!-- ASSIGNMENTS -->
-    <div class="page-section" id="page-assignments">
-      <div class="page-header"><div class="page-title">📌 التعيينات</div><button class="add-btn" onclick="openAssignModal()">+ تعيين طلب</button></div>
-      <div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>المونتير</th><th>الحالة</th><th>ملاحظات</th><th>تاريخ التعيين</th><th>إجراء</th></tr></thead><tbody id="assign-tbody"></tbody></table></div>
-    </div>
-
-    <!-- DELIVER -->
-    <div class="page-section" id="page-deliver">
-      <div class="page-header"><div class="page-title">📦 تسليم الفيديو</div></div>
-      <p style="color:var(--muted);font-size:13px;margin-bottom:16px">أضف رابط الفيديو المسلّم وملاحظة اختيارية لكل طلب مكتمل.</p>
-      <div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>الحالة</th><th>رابط الفيديو</th><th>إجراء</th></tr></thead><tbody id="deliver-tbody"></tbody></table></div>
-    </div>
-
-    <!-- CHAT -->
-    <div class="page-section" id="page-chat">
-      <div class="page-header"><div class="page-title">💬 الرسائل</div><button class="refresh-btn" onclick="loadConversations()">🔄 تحديث</button></div>
-      <div class="table-wrap"><table><thead><tr><th>الزبون</th><th>الإيميل</th><th>آخر رسالة</th><th>الحالة</th><th>آخر تحديث</th><th>إجراء</th></tr></thead><tbody id="chat-tbody"></tbody></table></div>
-    </div>
-  </div>
+  <div class="admin-main" id="admin-main-area"></div>
 </div>
 
-<!-- ═══ MODALS ═══ -->
-<div class="modal-bg" id="modal-order-detail">
-  <div class="modal-box" id="order-detail-content"></div>
-</div>
+<!-- MODALS -->
+<div class="modal-bg" id="modal-order-detail"><div class="modal-box" id="order-detail-content"></div></div>
 <div class="modal-bg" id="modal-editor">
   <div class="modal-box">
     <div class="modal-title" id="editor-modal-title">✂️ إضافة مونتير</div>
     <input type="hidden" id="edit-editor-id">
     <div class="modal-field"><div class="modal-label">الاسم *</div><input class="modal-input" id="ed-name" placeholder="اسم المونتير"></div>
-    <div class="modal-field"><div class="modal-label">الإيميل</div><input class="modal-input" id="ed-email" placeholder="email@..." dir="ltr"></div>
+    <div class="modal-field"><div class="modal-label">الإيميل (لتسجيل الدخول) *</div><input class="modal-input" id="ed-email" placeholder="editor@muntajli.com" dir="ltr"></div>
+    <div class="modal-field" id="ed-pass-field"><div class="modal-label">كلمة المرور (للمونتير الجديد)</div><input class="modal-input" id="ed-pass" type="password" placeholder="كلمة مرور 8 أحرف على الأقل" dir="ltr"></div>
     <div class="modal-field"><div class="modal-label">الهاتف</div><input class="modal-input" id="ed-phone" placeholder="07xxxxxxxxx" dir="ltr"></div>
-    <div class="modal-btns"><button class="modal-cancel" onclick="closeModal('modal-editor')">إلغاء</button><button class="modal-submit" onclick="saveEditor()">حفظ</button></div>
+    <div class="hint-box" id="ed-hint">⚡ عند إضافة مونتير جديد — سيتم إنشاء حساب تسجيل دخول تلقائياً بالإيميل والباسورد المدخلين. المونتير يدخل بهذا الإيميل ويشوف طلباته فقط.</div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeModal('modal-editor')">إلغاء</button><button class="modal-submit" id="ed-save-btn" onclick="saveEditor()">حفظ</button></div>
   </div>
 </div>
 <div class="modal-bg" id="modal-assign">
   <div class="modal-box">
     <div class="modal-title">📌 تعيين طلب لمونتير</div>
-    <div class="modal-field"><div class="modal-label">رقم الطلب *</div><select class="modal-input" id="as-order"><option value="">اختر الطلب...</option></select></div>
-    <div class="modal-field"><div class="modal-label">المونتير *</div><select class="modal-input" id="as-editor"><option value="">اختر المونتير...</option></select></div>
+    <div class="modal-field"><div class="modal-label">رقم الطلب *</div><select class="modal-input" id="as-order"><option value="">اختر...</option></select></div>
+    <div class="modal-field"><div class="modal-label">المونتير *</div><select class="modal-input" id="as-editor"><option value="">اختر...</option></select></div>
     <div class="modal-field"><div class="modal-label">ملاحظات</div><input class="modal-input" id="as-notes" placeholder="ملاحظات اختيارية..."></div>
     <div class="modal-btns"><button class="modal-cancel" onclick="closeModal('modal-assign')">إلغاء</button><button class="modal-submit" onclick="saveAssignment()">تعيين</button></div>
   </div>
@@ -264,367 +151,312 @@ select.modal-input{appearance:none;cursor:pointer;background-image:url("data:ima
     <div class="modal-title">📦 تسليم الفيديو</div>
     <input type="hidden" id="del-order-id">
     <div class="modal-field"><div class="modal-label">رابط الفيديو المسلّم *</div><input class="modal-input" id="del-url" placeholder="https://..." dir="ltr"></div>
-    <div class="modal-field"><div class="modal-label">ملاحظة للزبون</div><input class="modal-input" id="del-note" placeholder="مثلاً: تم تسليم الفيديو بنجاح"></div>
+    <div class="modal-field"><div class="modal-label">ملاحظة للزبون</div><input class="modal-input" id="del-note" placeholder="تم تسليم الفيديو بنجاح"></div>
     <div class="modal-btns"><button class="modal-cancel" onclick="closeModal('modal-deliver')">إلغاء</button><button class="modal-submit" onclick="submitDelivery()">تسليم ✓</button></div>
   </div>
 </div>
 <div class="modal-bg" id="modal-chat-view">
   <div class="modal-box" style="max-width:600px;max-height:80vh;display:flex;flex-direction:column">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="modal-title" style="margin-bottom:0" id="chat-view-title">💬 المحادثة</div><button class="modal-cancel" onclick="closeModal('modal-chat-view')" style="padding:6px 14px">✕</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="modal-title" style="margin-bottom:0" id="chat-view-title">💬</div><button class="modal-cancel" onclick="closeModal('modal-chat-view')" style="padding:6px 14px">✕</button></div>
     <div id="chat-messages-box" style="flex:1;overflow-y:auto;margin-bottom:14px;max-height:360px;padding:10px;background:rgba(255,255,255,.02);border-radius:var(--radius-sm);border:1px solid var(--border)"></div>
-    <div style="display:flex;gap:8px"><input class="modal-input" id="chat-reply-inp" placeholder="اكتب ردك..." style="flex:1"><button class="modal-submit" onclick="sendAdminReply()" style="flex:none;padding:12px 24px">إرسال</button></div>
+    <div style="display:flex;gap:8px"><input class="modal-input" id="chat-reply-inp" placeholder="اكتب ردك..." style="flex:1" onkeydown="if(event.key==='Enter')sendReply()"><button class="modal-submit" onclick="sendReply()" style="flex:none;padding:12px 24px">إرسال</button></div>
   </div>
 </div>
 
 <script>
 const SB_URL='https://sdshemvqevcybvxsdmev.supabase.co';
 const SB_KEY='sb_publishable_fqIU7FCtPJENbr20x_fC-w_EG6jndi3';
-const {createClient}=supabase;
+const{createClient}=supabase;
 const sb=createClient(SB_URL,SB_KEY,{auth:{flowType:'implicit',persistSession:true,autoRefreshToken:true,storage:window.localStorage}});
 
-let adminUser=null;
-let allOrders=[], allEditors=[], allAssignments=[], allConversations=[];
-
-const PACKAGES = [
-  {num:1,name:'الباقة الأساسية',label:'BASIC / 01'},
-  {num:2,name:'الباقة الاحترافية',label:'PRO / 02'},
-  {num:3,name:'باقة الذكاء الاصطناعي',label:'AI / 03'},
-  {num:4,name:'الباقة النخبة',label:'ELITE / 04'}
-];
-const statusMap={pending:{l:'⏳ قيد المراجعة',c:'pending'},processing:{l:'🔄 جارٍ التنفيذ',c:'processing'},completed:{l:'✓ مكتمل',c:'completed'},cancelled:{l:'✕ ملغي',c:'cancelled'}};
-const assignStatusMap={assigned:{l:'📌 معيّن',c:'assigned'},in_progress:{l:'🔄 قيد التنفيذ',c:'in_progress'},completed:{l:'✓ مكتمل',c:'completed'},cancelled:{l:'✕ ملغي',c:'cancelled'}};
+let currentUser=null, userRole=null, editorRecord=null;
+let allOrders=[],allEditors=[],allAssignments=[],allConversations=[];
+const PACKAGES=[{num:1,name:'الباقة الأساسية',label:'BASIC / 01'},{num:2,name:'الباقة الاحترافية',label:'PRO / 02'},{num:3,name:'باقة الذكاء الاصطناعي',label:'AI / 03'},{num:4,name:'الباقة النخبة',label:'ELITE / 04'}];
+const statusMap={pending:{l:'⏳ قيد المراجعة'},processing:{l:'🔄 جارٍ التنفيذ'},completed:{l:'✓ مكتمل'},cancelled:{l:'✕ ملغي'}};
+const assignMap={assigned:{l:'📌 معيّن'},in_progress:{l:'🔄 قيد التنفيذ'},completed:{l:'✓ مكتمل'},cancelled:{l:'✕ ملغي'}};
 
 /* ═══ LOGIN ═══ */
-async function adminLogin(){
+async function doLogin(){
   const email=document.getElementById('l-email').value.trim();
   const pass=document.getElementById('l-pass').value;
   const err=document.getElementById('l-err');
   if(!email||!pass){err.textContent='أدخل الإيميل وكلمة المرور';return}
-  const btn=document.getElementById('l-btn');
-  btn.disabled=true;btn.textContent='جارٍ الدخول...';
+  const btn=document.getElementById('l-btn');btn.disabled=true;btn.textContent='جارٍ الدخول...';
   const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  if(error){err.textContent='خطأ: إيميل أو كلمة مرور غير صحيحة';btn.disabled=false;btn.textContent='تسجيل الدخول';return}
-  // Check if this user is admin
-  const{data:adm}=await sb.from('admin_users').select('*').eq('id',data.user.id).maybeSingle();
-  if(!adm){err.textContent='⚠️ هذا الحساب ليس أدمن';await sb.auth.signOut();btn.disabled=false;btn.textContent='تسجيل الدخول';return}
-  adminUser=data.user;
-  showAdminApp();
-}
-async function adminLogout(){await sb.auth.signOut();location.reload()}
-
-function showAdminApp(){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('admin-app').style.display='block';
-  const name=adminUser.user_metadata?.full_name||adminUser.email?.split('@')[0]||'Admin';
-  document.getElementById('sf-avatar').textContent=name.charAt(0).toUpperCase();
-  document.getElementById('sf-name').textContent=name;
-  document.getElementById('sf-email').textContent=adminUser.email;
-  loadAll();
+  if(error){err.textContent='إيميل أو كلمة مرور غير صحيحة';btn.disabled=false;btn.textContent='تسجيل الدخول';return}
+  await detectRole(data.user);
 }
 
-// Auto-login check
+async function detectRole(user){
+  currentUser=user;
+  // Check admin first
+  const{data:adm}=await sb.from('admin_users').select('*').eq('id',user.id).maybeSingle();
+  if(adm){userRole='admin';showApp();return}
+  // Check editor
+  const{data:ed}=await sb.from('editors').select('*').eq('user_id',user.id).maybeSingle();
+  if(ed){userRole='editor';editorRecord=ed;showApp();return}
+  // Not authorized
+  document.getElementById('l-err').textContent='⚠️ هذا الحساب غير مصرّح';
+  await sb.auth.signOut();
+  const btn=document.getElementById('l-btn');btn.disabled=false;btn.textContent='تسجيل الدخول';
+}
+
+async function doLogout(){await sb.auth.signOut();location.reload()}
+
+// Auto login
 (async()=>{
   const{data:{session}}=await sb.auth.getSession();
-  if(session?.user){
-    const{data:adm}=await sb.from('admin_users').select('*').eq('id',session.user.id).maybeSingle();
-    if(adm){adminUser=session.user;showAdminApp()}
-  }
+  if(session?.user) await detectRole(session.user);
 })();
 
-/* ═══ NAVIGATION ═══ */
+/* ═══ APP INIT ═══ */
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-app').style.display='block';
+  const name=currentUser.user_metadata?.full_name||editorRecord?.name||currentUser.email?.split('@')[0]||'—';
+  document.getElementById('sf-avatar').textContent=name.charAt(0).toUpperCase();
+  document.getElementById('sf-name').textContent=name;
+  document.getElementById('sf-email').textContent=currentUser.email;
+  const roleEl=document.getElementById('sidebar-role');
+  if(userRole==='admin'){roleEl.textContent='🛡️ مدير';roleEl.classList.remove('editor-role')}
+  else{roleEl.textContent='✂️ مونتير';roleEl.classList.add('editor-role')}
+  buildSidebar();
+  buildPages();
+  switchPage(userRole==='admin'?'dashboard':'my-orders');
+}
+
+function buildSidebar(){
+  const nav=document.getElementById('sidebar-nav');
+  if(userRole==='admin'){
+    nav.innerHTML=`
+      <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="nav-icon">📊</span> الرئيسية</div>
+      <div class="nav-item" data-page="orders" onclick="switchPage('orders')"><span class="nav-icon">📋</span> الطلبات <span class="nav-badge" id="orders-badge" style="display:none">0</span></div>
+      <div class="nav-item" data-page="showcase" onclick="switchPage('showcase')"><span class="nav-icon">🎬</span> فيديوهات العرض</div>
+      <div class="nav-item" data-page="editors" onclick="switchPage('editors')"><span class="nav-icon">✂️</span> المونتيرين</div>
+      <div class="nav-item" data-page="assignments" onclick="switchPage('assignments')"><span class="nav-icon">📌</span> التعيينات</div>
+      <div class="nav-item" data-page="deliver" onclick="switchPage('deliver')"><span class="nav-icon">📦</span> تسليم الفيديو</div>
+      <div class="nav-item" data-page="chat" onclick="switchPage('chat')"><span class="nav-icon">💬</span> الرسائل</div>`;
+  } else {
+    nav.innerHTML=`
+      <div class="nav-item active" data-page="my-orders" onclick="switchPage('my-orders')"><span class="nav-icon">📋</span> طلباتي</div>
+      <div class="nav-item" data-page="my-deliver" onclick="switchPage('my-deliver')"><span class="nav-icon">📦</span> تسليم الفيديو</div>
+      <div class="nav-item" data-page="my-chat" onclick="switchPage('my-chat')"><span class="nav-icon">💬</span> رسائل الزبائن</div>`;
+  }
+}
+
+function buildPages(){
+  const main=document.getElementById('admin-main-area');
+  if(userRole==='admin'){
+    main.innerHTML=`
+    <div class="page-section active" id="page-dashboard"><div class="page-header"><div class="page-title">📊 نظرة عامة</div><button class="refresh-btn" onclick="loadAll()">🔄 تحديث</button></div><div class="stats-grid"><div class="stat-card"><div class="sc-icon gold">👥</div><div><div class="sc-val" id="st-users">0</div><div class="sc-label">حساب مسجّل</div></div></div><div class="stat-card"><div class="sc-icon blue">📋</div><div><div class="sc-val" id="st-orders">0</div><div class="sc-label">إجمالي الطلبات</div></div></div><div class="stat-card"><div class="sc-icon gold">⏳</div><div><div class="sc-val" id="st-pending">0</div><div class="sc-label">قيد المراجعة</div></div></div><div class="stat-card"><div class="sc-icon green">✓</div><div><div class="sc-val" id="st-done">0</div><div class="sc-label">مكتملة</div></div></div></div><div class="table-wrap"><div class="table-head"><div class="table-title">📋 آخر الطلبات</div></div><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="dash-tbody"></tbody></table></div></div>
+    <div class="page-section" id="page-orders"><div class="page-header"><div class="page-title">📋 الطلبات</div><button class="refresh-btn" onclick="loadOrders()">🔄</button></div><div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>الملفات</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="orders-tbody"></tbody></table></div></div>
+    <div class="page-section" id="page-showcase"><div class="page-header"><div class="page-title">🎬 فيديوهات العرض</div></div><p style="color:var(--muted);font-size:13px;margin-bottom:8px">ارفع فيديو لكل باقة — يظهر تلقائياً على الموقع.</p><div class="showcase-grid" id="showcase-grid"></div></div>
+    <div class="page-section" id="page-editors"><div class="page-header"><div class="page-title">✂️ المونتيرين</div><button class="add-btn" onclick="openEditorModal()">+ إضافة مونتير</button></div><div class="table-wrap"><table><thead><tr><th>الاسم</th><th>الإيميل</th><th>الهاتف</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="editors-tbody"></tbody></table></div></div>
+    <div class="page-section" id="page-assignments"><div class="page-header"><div class="page-title">📌 التعيينات</div><button class="add-btn" onclick="openAssignModal()">+ تعيين طلب</button></div><div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>المونتير</th><th>الحالة</th><th>ملاحظات</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="assign-tbody"></tbody></table></div></div>
+    <div class="page-section" id="page-deliver"><div class="page-header"><div class="page-title">📦 تسليم الفيديو</div></div><div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>الحالة</th><th>رابط</th><th>إجراء</th></tr></thead><tbody id="deliver-tbody"></tbody></table></div></div>
+    <div class="page-section" id="page-chat"><div class="page-header"><div class="page-title">💬 الرسائل</div><button class="refresh-btn" onclick="loadConvos()">🔄</button></div><div class="table-wrap"><table><thead><tr><th>الزبون</th><th>الإيميل</th><th>آخر رسالة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="chat-tbody"></tbody></table></div></div>`;
+    loadAll();
+  } else {
+    // EDITOR VIEW
+    main.innerHTML=`
+    <div class="page-section active" id="page-my-orders"><div class="page-header"><div class="page-title">📋 طلباتي المعيّنة</div><button class="refresh-btn" onclick="loadMyOrders()">🔄</button></div><div class="hint-box">هنا تظهر الطلبات اللي عيّنها المدير إلك. يمكنك تغيير حالة التعيين وعرض تفاصيل كل طلب.</div><div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>المبلغ</th><th>حالة التعيين</th><th>إجراء</th></tr></thead><tbody id="my-orders-tbody"></tbody></table></div></div>
+    <div class="page-section" id="page-my-deliver"><div class="page-header"><div class="page-title">📦 تسليم الفيديو</div></div><div class="hint-box">بعد ما تخلص المونتاج، أدخل رابط الفيديو المسلّم هنا.</div><div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>الزبون</th><th>الباقة</th><th>رابط الفيديو</th><th>إجراء</th></tr></thead><tbody id="my-deliver-tbody"></tbody></table></div></div>
+    <div class="page-section" id="page-my-chat"><div class="page-header"><div class="page-title">💬 رسائل الزبائن</div><button class="refresh-btn" onclick="loadMyConvos()">🔄</button></div><div class="hint-box">هنا تقدر ترد على رسائل الزبائن المرتبطين بطلباتك.</div><div class="table-wrap"><table><thead><tr><th>الزبون</th><th>آخر رسالة</th><th>إجراء</th></tr></thead><tbody id="my-chat-tbody"></tbody></table></div></div>`;
+    loadMyOrders();
+  }
+}
+
+/* ═══ NAV ═══ */
 function switchPage(page){
   document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.trim().includes(getPageLabel(page)))n.classList.add('active')});
-  if(page==='orders')loadOrders();
-  if(page==='showcase')loadShowcase();
-  if(page==='editors')loadEditors();
-  if(page==='assignments')loadAssignments();
-  if(page==='deliver')loadDeliverOrders();
-  if(page==='chat')loadConversations();
+  const el=document.getElementById('page-'+page);if(el)el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{n.classList.toggle('active',n.dataset.page===page)});
+  const loaders={orders:loadOrders,showcase:loadShowcase,editors:loadEditors,assignments:loadAssignments,deliver:loadDeliver,chat:loadConvos,'my-orders':loadMyOrders,'my-deliver':loadMyDeliver,'my-chat':loadMyConvos};
+  if(loaders[page])loaders[page]();
 }
-function getPageLabel(p){const m={dashboard:'الرئيسية',orders:'الطلبات',showcase:'فيديوهات العرض',editors:'المونتيرين',assignments:'التعيينات',deliver:'تسليم الفيديو',chat:'الرسائل'};return m[p]||''}
 
-/* ═══ LOAD ALL ═══ */
+/* ═══ ADMIN: LOAD ALL ═══ */
 async function loadAll(){
-  const[ordRes,profRes]=await Promise.all([
-    sb.from('orders').select('*').order('created_at',{ascending:false}),
-    sb.from('profiles').select('id',{count:'exact',head:true})
-  ]);
+  const[ordRes,profRes]=await Promise.all([sb.from('orders').select('*').order('created_at',{ascending:false}),sb.from('profiles').select('id',{count:'exact',head:true})]);
   allOrders=ordRes.data||[];
-  const totalUsers=profRes.count||0;
-  document.getElementById('st-users').textContent=totalUsers;
+  document.getElementById('st-users').textContent=profRes.count||0;
   document.getElementById('st-orders').textContent=allOrders.length;
   document.getElementById('st-pending').textContent=allOrders.filter(o=>o.status==='pending').length;
   document.getElementById('st-done').textContent=allOrders.filter(o=>o.status==='completed').length;
-  const pendingCount=allOrders.filter(o=>o.status==='pending').length;
   const badge=document.getElementById('orders-badge');
-  if(pendingCount>0){badge.style.display='inline';badge.textContent=pendingCount}else{badge.style.display='none'}
-  // Recent orders for dashboard
-  const recent=allOrders.slice(0,5);
-  document.getElementById('dash-orders-tbody').innerHTML=recent.length?recent.map(o=>`<tr>
-    <td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td>
-    <td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td>
-    <td>${(o.package_price||0).toLocaleString('en-US')} د.ع</td>
-    <td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td>
-    <td style="color:var(--muted);font-size:12px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td>
-  </tr>`).join(''):'<tr><td colspan="6" class="empty-state">لا توجد طلبات بعد</td></tr>';
+  const pc=allOrders.filter(o=>o.status==='pending').length;
+  if(pc>0){badge.style.display='inline';badge.textContent=pc}else badge.style.display='none';
+  const r=allOrders.slice(0,5);
+  document.getElementById('dash-tbody').innerHTML=r.length?r.map(o=>`<tr><td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td><td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td><td>${(o.package_price||0).toLocaleString()} د.ع</td><td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td><td style="color:var(--muted);font-size:12px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td></tr>`).join(''):'<tr><td colspan="6" class="empty-state">لا توجد طلبات</td></tr>';
 }
 
-/* ═══ ORDERS ═══ */
+/* ═══ ADMIN: ORDERS ═══ */
 async function loadOrders(){
-  const{data}=await sb.from('orders').select('*').order('created_at',{ascending:false});
-  allOrders=data||[];
-  document.getElementById('orders-tbody').innerHTML=allOrders.length?allOrders.map(o=>`<tr>
-    <td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td>
-    <td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td>
-    <td>${(o.package_price||0).toLocaleString('en-US')} د.ع</td>
-    <td>${o.files_count||0} ملف</td>
-    <td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td>
-    <td style="color:var(--muted);font-size:12px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td>
-    <td class="actions-cell">
-      <button class="action-btn" onclick="viewOrder('${o.order_id}')">👁 عرض</button>
-      <select onchange="changeStatus('${o.order_id}',this.value);this.value=''" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:6px 8px;border-radius:6px;font-family:var(--font);cursor:pointer">
-        <option value="">تغيير الحالة</option><option value="pending">قيد المراجعة</option><option value="processing">جارٍ التنفيذ</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option>
-      </select>
-    </td>
-  </tr>`).join(''):'<tr><td colspan="8" class="empty-state">لا توجد طلبات</td></tr>';
+  const{data}=await sb.from('orders').select('*').order('created_at',{ascending:false});allOrders=data||[];
+  document.getElementById('orders-tbody').innerHTML=allOrders.length?allOrders.map(o=>`<tr><td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td><td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td><td>${(o.package_price||0).toLocaleString()} د.ع</td><td>${o.files_count||0}</td><td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td><td style="color:var(--muted);font-size:12px">${new Date(o.created_at).toLocaleDateString('ar-IQ')}</td><td class="actions-cell"><button class="action-btn" onclick="viewOrder('${o.order_id}')">👁</button><select onchange="chgStatus('${o.order_id}',this.value);this.value=''" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px;border-radius:6px;font-family:var(--font);cursor:pointer"><option value="">الحالة</option><option value="pending">قيد المراجعة</option><option value="processing">جارٍ التنفيذ</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option></select></td></tr>`).join(''):'<tr><td colspan="8" class="empty-state">لا توجد طلبات</td></tr>';
 }
-
-async function changeStatus(orderId,newStatus){
-  if(!newStatus)return;
-  await sb.from('orders').update({status:newStatus}).eq('order_id',orderId);
-  loadOrders();loadAll();
-}
-
-function viewOrder(orderId){
-  const o=allOrders.find(x=>x.order_id===orderId);if(!o)return;
+async function chgStatus(oid,s){if(!s)return;await sb.from('orders').update({status:s}).eq('order_id',oid);loadOrders();loadAll()}
+function viewOrder(oid){
+  const o=allOrders.find(x=>x.order_id===oid);if(!o)return;
   const files=(o.files||[]).map(f=>`<a href="${f.url}" target="_blank" class="file-chip">${f.type==='video'?'🎬':'🖼️'} ${f.name}</a>`).join('');
-  document.getElementById('order-detail-content').innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><div class="modal-title" style="margin-bottom:0">📋 تفاصيل الطلب</div><button class="modal-cancel" onclick="closeModal('modal-order-detail')" style="padding:6px 14px">✕</button></div>
-    <div class="detail-grid">
-      <div class="detail-item"><div class="di-label">رقم الطلب</div><div class="di-val" style="color:var(--gold);font-family:monospace">${o.order_id}</div></div>
-      <div class="detail-item"><div class="di-label">الحالة</div><div class="di-val"><span class="status-badge ${o.status}">${(statusMap[o.status]||statusMap.pending).l}</span></div></div>
-      <div class="detail-item"><div class="di-label">الزبون</div><div class="di-val">${o.client_name||'—'}</div></div>
-      <div class="detail-item"><div class="di-label">الهاتف</div><div class="di-val" dir="ltr">${o.client_phone||'—'}</div></div>
-      <div class="detail-item"><div class="di-label">النوع</div><div class="di-val">${o.type==='classic'?'🎬 كلاسيكي':'🤖 ذكاء اصطناعي'}</div></div>
-      <div class="detail-item"><div class="di-label">الباقة</div><div class="di-val">${o.package_name||'—'}</div></div>
-      <div class="detail-item"><div class="di-label">المبلغ</div><div class="di-val" style="color:var(--gold)">${(o.package_price||0).toLocaleString('en-US')} د.ع</div></div>
-      <div class="detail-item"><div class="di-label">طريقة الدفع</div><div class="di-val">${o.pay_method||'—'}</div></div>
-      <div class="detail-item"><div class="di-label">رقم التحويل</div><div class="di-val" dir="ltr">${o.transfer_id||'—'}</div></div>
-      <div class="detail-item"><div class="di-label">التاريخ</div><div class="di-val">${new Date(o.created_at).toLocaleString('ar-IQ')}</div></div>
-      ${o.details?`<div class="detail-item full"><div class="di-label">تفاصيل المونتاج</div><div class="di-val" style="font-size:13px;line-height:1.8;font-weight:400">${o.details}</div></div>`:''}
-      ${o.ref_link?`<div class="detail-item full"><div class="di-label">رابط مرجعي</div><div class="di-val"><a href="${o.ref_link}" target="_blank" style="color:var(--gold)">${o.ref_link}</a></div></div>`:''}
-      ${files?`<div class="detail-item full"><div class="di-label">الملفات (${o.files_count||0})</div><div class="file-grid">${files}</div></div>`:''}
-      ${o.pay_screenshot?`<div class="detail-item full"><div class="di-label">إيصال الدفع</div><a href="${o.pay_screenshot}" target="_blank"><img src="${o.pay_screenshot}" style="max-width:200px;border-radius:8px;margin-top:6px"></a></div>`:''}
-    </div>`;
+  document.getElementById('order-detail-content').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><div class="modal-title" style="margin-bottom:0">📋 تفاصيل الطلب</div><button class="modal-cancel" onclick="closeModal('modal-order-detail')" style="padding:6px 14px">✕</button></div><div class="detail-grid"><div class="detail-item"><div class="di-label">رقم الطلب</div><div class="di-val" style="color:var(--gold);font-family:monospace">${o.order_id}</div></div><div class="detail-item"><div class="di-label">الحالة</div><div class="di-val"><span class="status-badge ${o.status}">${(statusMap[o.status]||statusMap.pending).l}</span></div></div><div class="detail-item"><div class="di-label">الزبون</div><div class="di-val">${o.client_name||'—'}</div></div><div class="detail-item"><div class="di-label">الهاتف</div><div class="di-val" dir="ltr">${o.client_phone||'—'}</div></div><div class="detail-item"><div class="di-label">النوع</div><div class="di-val">${o.type==='classic'?'🎬 كلاسيكي':'🤖 AI'}</div></div><div class="detail-item"><div class="di-label">الباقة</div><div class="di-val">${o.package_name||'—'}</div></div><div class="detail-item"><div class="di-label">المبلغ</div><div class="di-val" style="color:var(--gold)">${(o.package_price||0).toLocaleString()} د.ع</div></div><div class="detail-item"><div class="di-label">رقم التحويل</div><div class="di-val" dir="ltr">${o.transfer_id||'—'}</div></div>${o.details?`<div class="detail-item full"><div class="di-label">التفاصيل</div><div class="di-val" style="font-size:13px;line-height:1.8;font-weight:400">${o.details}</div></div>`:''}${files?`<div class="detail-item full"><div class="di-label">الملفات</div><div class="file-grid">${files}</div></div>`:''}${o.pay_screenshot?`<div class="detail-item full"><div class="di-label">إيصال الدفع</div><a href="${o.pay_screenshot}" target="_blank"><img src="${o.pay_screenshot}" style="max-width:200px;border-radius:8px;margin-top:6px"></a></div>`:''}</div>`;
   openModal('modal-order-detail');
 }
 
-/* ═══ SHOWCASE ═══ */
+/* ═══ ADMIN: SHOWCASE ═══ */
 async function loadShowcase(){
-  const{data}=await sb.from('showcase_videos').select('*');
-  const vids={};if(data)data.forEach(v=>vids[v.package_num]=v);
-  document.getElementById('showcase-grid').innerHTML=PACKAGES.map(pkg=>{
-    const v=vids[pkg.num];
-    return `<div class="showcase-card">
-      <div class="showcase-preview">${v?`<video src="${v.video_url}" muted loop autoplay playsinline></video>`:`<div class="placeholder"><div class="placeholder-icon">🎬</div><div>لا يوجد فيديو</div></div>`}</div>
-      <div class="showcase-info">
-        <div class="showcase-pkg-name">${pkg.label} — ${pkg.name}</div>
-        <div class="showcase-actions">
-          <label class="action-btn gold file-upload-btn">${v?'🔄 تغيير':'📤 رفع فيديو'}<input type="file" accept="video/*" onchange="uploadShowcase(${pkg.num},this.files[0])"></label>
-          ${v?`<button class="action-btn danger" onclick="deleteShowcase(${pkg.num},'${v.id}','${v.video_url}')">🗑️ حذف</button>`:''}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  const{data}=await sb.from('showcase_videos').select('*');const vids={};if(data)data.forEach(v=>vids[v.package_num]=v);
+  document.getElementById('showcase-grid').innerHTML=PACKAGES.map(p=>{const v=vids[p.num];return`<div class="showcase-card"><div class="showcase-preview">${v?`<video src="${v.video_url}" muted loop autoplay playsinline></video>`:`<div class="placeholder"><div class="placeholder-icon">🎬</div><div>لا يوجد</div></div>`}</div><div class="showcase-info"><div class="showcase-pkg-name">${p.label} — ${p.name}</div><div class="showcase-actions"><label class="action-btn gold file-upload-btn">${v?'🔄 تغيير':'📤 رفع'}<input type="file" accept="video/*" onchange="uploadShowcase(${p.num},this.files[0])"></label>${v?`<button class="action-btn danger" onclick="delShowcase(${p.num},'${v.id}','${v.video_url}')">🗑️</button>`:''}</div></div></div>`}).join('');
 }
+async function uploadShowcase(n,file){if(!file||!file.type.startsWith('video/'))return;const ext=file.name.split('.').pop();const path=`pkg${n}/${Date.now()}.${ext}`;const{data:ex}=await sb.from('showcase_videos').select('id,video_url').eq('package_num',n).maybeSingle();if(ex){const op=ex.video_url.split('/showcase-videos/')[1];if(op)await sb.storage.from('showcase-videos').remove([decodeURIComponent(op)]);await sb.from('showcase_videos').delete().eq('id',ex.id)}const{error}=await sb.storage.from('showcase-videos').upload(path,file,{cacheControl:'3600',upsert:true});if(error){alert('خطأ: '+error.message);return}const{data:u}=sb.storage.from('showcase-videos').getPublicUrl(path);await sb.from('showcase_videos').insert({package_num:n,video_url:u.publicUrl,title:PACKAGES.find(p=>p.num===n)?.name||'',uploaded_by:currentUser.id});loadShowcase()}
+async function delShowcase(n,id,url){if(!confirm('حذف؟'))return;const p=url.split('/showcase-videos/')[1];if(p)await sb.storage.from('showcase-videos').remove([decodeURIComponent(p)]);await sb.from('showcase_videos').delete().eq('id',id);loadShowcase()}
 
-async function uploadShowcase(pkgNum,file){
-  if(!file)return;
-  if(!file.type.startsWith('video/')){alert('يرجى اختيار ملف فيديو');return}
-  const ext=file.name.split('.').pop().toLowerCase();
-  const path=`pkg${pkgNum}/${Date.now()}.${ext}`;
-  // Delete existing first
-  const{data:existing}=await sb.from('showcase_videos').select('id,video_url').eq('package_num',pkgNum).maybeSingle();
-  if(existing){
-    const oldPath=existing.video_url.split('/showcase-videos/')[1];
-    if(oldPath)await sb.storage.from('showcase-videos').remove([decodeURIComponent(oldPath)]);
-    await sb.from('showcase_videos').delete().eq('id',existing.id);
-  }
-  const{error:upErr}=await sb.storage.from('showcase-videos').upload(path,file,{cacheControl:'3600',upsert:true});
-  if(upErr){alert('خطأ بالرفع: '+upErr.message);return}
-  const{data:urlData}=sb.storage.from('showcase-videos').getPublicUrl(path);
-  await sb.from('showcase_videos').insert({package_num:pkgNum,video_url:urlData.publicUrl,title:PACKAGES.find(p=>p.num===pkgNum)?.name||'',uploaded_by:adminUser.id});
-  loadShowcase();
-}
-
-async function deleteShowcase(pkgNum,id,url){
-  if(!confirm('حذف فيديو العرض لهذه الباقة؟'))return;
-  const path=url.split('/showcase-videos/')[1];
-  if(path)await sb.storage.from('showcase-videos').remove([decodeURIComponent(path)]);
-  await sb.from('showcase_videos').delete().eq('id',id);
-  loadShowcase();
-}
-
-/* ═══ EDITORS ═══ */
+/* ═══ ADMIN: EDITORS (with auto auth account creation) ═══ */
 async function loadEditors(){
-  const{data}=await sb.from('editors').select('*').order('created_at',{ascending:false});
-  allEditors=data||[];
-  document.getElementById('editors-tbody').innerHTML=allEditors.length?allEditors.map(e=>`<tr>
-    <td style="font-weight:600">${e.name}</td><td style="color:var(--muted);direction:ltr">${e.email||'—'}</td>
-    <td style="color:var(--muted);direction:ltr">${e.phone||'—'}</td>
-    <td><span class="status-badge ${e.status}">${e.status==='active'?'✓ نشط':'✕ موقف'}</span></td>
-    <td class="actions-cell">
-      <button class="action-btn gold" onclick="editEditor('${e.id}')">✏️ تعديل</button>
-      <button class="action-btn danger" onclick="deleteEditor('${e.id}')">🗑️</button>
-    </td>
-  </tr>`).join(''):'<tr><td colspan="5" class="empty-state">لا يوجد مونتيرين — أضف أول مونتير</td></tr>';
+  const{data}=await sb.from('editors').select('*').order('created_at',{ascending:false});allEditors=data||[];
+  document.getElementById('editors-tbody').innerHTML=allEditors.length?allEditors.map(e=>`<tr><td style="font-weight:600">${e.name}</td><td style="color:var(--muted);direction:ltr">${e.email||'—'}</td><td style="color:var(--muted);direction:ltr">${e.phone||'—'}</td><td><span class="status-badge ${e.status}">${e.status==='active'?'✓ نشط':'✕ موقف'}</span></td><td class="actions-cell"><button class="action-btn gold" onclick="editEditorBtn('${e.id}')">✏️</button><button class="action-btn danger" onclick="delEditor('${e.id}')">🗑️</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">لا يوجد مونتيرين</td></tr>';
 }
-
-function openEditorModal(editor){
-  document.getElementById('editor-modal-title').textContent=editor?'✏️ تعديل مونتير':'✂️ إضافة مونتير';
-  document.getElementById('edit-editor-id').value=editor?.id||'';
-  document.getElementById('ed-name').value=editor?.name||'';
-  document.getElementById('ed-email').value=editor?.email||'';
-  document.getElementById('ed-phone').value=editor?.phone||'';
+function openEditorModal(ed){
+  document.getElementById('editor-modal-title').textContent=ed?'✏️ تعديل مونتير':'✂️ إضافة مونتير';
+  document.getElementById('edit-editor-id').value=ed?.id||'';
+  document.getElementById('ed-name').value=ed?.name||'';
+  document.getElementById('ed-email').value=ed?.email||'';
+  document.getElementById('ed-phone').value=ed?.phone||'';
+  document.getElementById('ed-pass').value='';
+  // Hide password for edit, show for new
+  document.getElementById('ed-pass-field').style.display=ed?'none':'block';
+  document.getElementById('ed-hint').style.display=ed?'none':'block';
+  // Disable email editing for existing (linked to auth)
+  document.getElementById('ed-email').readOnly=!!ed;
   openModal('modal-editor');
 }
-function editEditor(id){const e=allEditors.find(x=>x.id===id);if(e)openEditorModal(e)}
+function editEditorBtn(id){const e=allEditors.find(x=>x.id===id);if(e)openEditorModal(e)}
+
 async function saveEditor(){
   const id=document.getElementById('edit-editor-id').value;
   const name=document.getElementById('ed-name').value.trim();
+  const email=document.getElementById('ed-email').value.trim();
+  const phone=document.getElementById('ed-phone').value.trim();
+  const pass=document.getElementById('ed-pass').value;
   if(!name){alert('أدخل اسم المونتير');return}
-  const data={name,email:document.getElementById('ed-email').value.trim(),phone:document.getElementById('ed-phone').value.trim()};
-  if(id)await sb.from('editors').update(data).eq('id',id);
-  else await sb.from('editors').insert(data);
+  const btn=document.getElementById('ed-save-btn');btn.disabled=true;btn.textContent='جارٍ الحفظ...';
+
+  if(id){
+    // UPDATE existing editor
+    await sb.from('editors').update({name,phone}).eq('id',id);
+  } else {
+    // CREATE new editor with auth account
+    if(!email){alert('أدخل إيميل المونتير');btn.disabled=false;btn.textContent='حفظ';return}
+    if(!pass||pass.length<8){alert('كلمة المرور 8 أحرف على الأقل');btn.disabled=false;btn.textContent='حفظ';return}
+
+    // 1. Create auth user via Supabase Admin (using service role would be ideal, but we use signUp workaround)
+    // Since we're logged in as admin, we'll use a workaround: sign up the editor, then re-login as admin
+    const adminEmail=currentUser.email;
+    
+    // Store admin session
+    const{data:adminSession}=await sb.auth.getSession();
+    
+    // Sign up editor
+    const{data:signUpData,error:signUpErr}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+    
+    if(signUpErr){
+      alert('خطأ بإنشاء الحساب: '+signUpErr.message);
+      btn.disabled=false;btn.textContent='حفظ';return;
+    }
+    
+    const editorUserId=signUpData.user?.id;
+    
+    // Re-login as admin immediately
+    // Note: The admin needs to re-enter password, OR we keep the session
+    // Actually signUp doesn't sign out current user if email confirmation is required
+    // Let's check if we're still the admin
+    const{data:currentSession}=await sb.auth.getSession();
+    if(!currentSession.session || currentSession.session.user.id !== currentUser.id){
+      // We got signed in as the new user, need to sign back as admin
+      // This is a known limitation — we'll prompt
+      alert('⚠️ تم إنشاء حساب المونتير. يرجى إعادة تسجيل دخولك كأدمن.');
+      await sb.auth.signOut();
+      location.reload();
+      return;
+    }
+    
+    // 2. Insert editor record linked to auth user
+    if(editorUserId){
+      await sb.from('editors').insert({user_id:editorUserId,name,email,phone});
+    } else {
+      // If no user id (pending confirmation), insert without user_id
+      await sb.from('editors').insert({name,email,phone});
+      alert('⚠️ تم إضافة المونتير لكن حسابه يحتاج تأكيد الإيميل. بديل: أنشئ المستخدم يدوياً من Supabase Auth مع Auto Confirm.');
+    }
+  }
+  btn.disabled=false;btn.textContent='حفظ';
   closeModal('modal-editor');loadEditors();
 }
-async function deleteEditor(id){if(!confirm('حذف هذا المونتير؟'))return;await sb.from('editors').delete().eq('id',id);loadEditors()}
 
-/* ═══ ASSIGNMENTS ═══ */
+async function delEditor(id){if(!confirm('حذف هذا المونتير؟'))return;await sb.from('editors').delete().eq('id',id);loadEditors()}
+
+/* ═══ ADMIN: ASSIGNMENTS ═══ */
 async function loadAssignments(){
-  const{data}=await sb.from('order_assignments').select('*,editors(name)').order('assigned_at',{ascending:false});
-  allAssignments=data||[];
-  document.getElementById('assign-tbody').innerHTML=allAssignments.length?allAssignments.map(a=>{
-    const st=assignStatusMap[a.status]||assignStatusMap.assigned;
-    return `<tr>
-      <td style="color:var(--gold);font-family:monospace;font-weight:700">${a.order_id}</td>
-      <td style="font-weight:600">${a.editors?.name||'—'}</td>
-      <td><span class="status-badge ${st.c}">${st.l}</span></td>
-      <td style="color:var(--muted);font-size:12px">${a.notes||'—'}</td>
-      <td style="color:var(--muted);font-size:12px">${new Date(a.assigned_at).toLocaleDateString('ar-IQ')}</td>
-      <td class="actions-cell">
-        <select onchange="changeAssignStatus('${a.id}',this.value);this.value=''" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:6px;border-radius:6px;font-family:var(--font);cursor:pointer">
-          <option value="">تغيير</option><option value="assigned">معيّن</option><option value="in_progress">قيد التنفيذ</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option>
-        </select>
-      </td>
-    </tr>`;
-  }).join(''):'<tr><td colspan="6" class="empty-state">لا توجد تعيينات بعد</td></tr>';
+  const{data}=await sb.from('order_assignments').select('*,editors(name)').order('assigned_at',{ascending:false});allAssignments=data||[];
+  document.getElementById('assign-tbody').innerHTML=allAssignments.length?allAssignments.map(a=>`<tr><td style="color:var(--gold);font-family:monospace;font-weight:700">${a.order_id}</td><td style="font-weight:600">${a.editors?.name||'—'}</td><td><span class="status-badge ${a.status}">${(assignMap[a.status]||assignMap.assigned).l}</span></td><td style="color:var(--muted);font-size:12px">${a.notes||'—'}</td><td style="color:var(--muted);font-size:12px">${new Date(a.assigned_at).toLocaleDateString('ar-IQ')}</td><td><select onchange="chgAssign('${a.id}',this.value);this.value=''" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px;border-radius:6px;font-family:var(--font);cursor:pointer"><option value="">تغيير</option><option value="assigned">معيّن</option><option value="in_progress">قيد التنفيذ</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option></select></td></tr>`).join(''):'<tr><td colspan="6" class="empty-state">لا توجد تعيينات</td></tr>';
 }
+async function openAssignModal(){if(!allOrders.length)await loadOrders();if(!allEditors.length)await loadEditors();document.getElementById('as-order').innerHTML='<option value="">اختر...</option>'+allOrders.map(o=>`<option value="${o.order_id}">${o.order_id} — ${o.client_name||'?'}</option>`).join('');document.getElementById('as-editor').innerHTML='<option value="">اختر...</option>'+allEditors.filter(e=>e.status==='active').map(e=>`<option value="${e.id}">${e.name}</option>`).join('');document.getElementById('as-notes').value='';openModal('modal-assign')}
+async function saveAssignment(){const oid=document.getElementById('as-order').value;const eid=document.getElementById('as-editor').value;if(!oid||!eid){alert('اختر الطلب والمونتير');return}await sb.from('order_assignments').insert({order_id:oid,editor_id:eid,assigned_by:currentUser.id,notes:document.getElementById('as-notes').value.trim()});closeModal('modal-assign');loadAssignments()}
+async function chgAssign(id,v){if(!v)return;const u={status:v};if(v==='completed')u.completed_at=new Date().toISOString();await sb.from('order_assignments').update(u).eq('id',id);loadAssignments()}
 
-async function openAssignModal(){
-  if(!allOrders.length)await loadOrders();
-  if(!allEditors.length)await loadEditors();
-  const oSel=document.getElementById('as-order');
-  oSel.innerHTML='<option value="">اختر الطلب...</option>'+allOrders.map(o=>`<option value="${o.order_id}">${o.order_id} — ${o.client_name||'?'} (${o.package_name||'?'})</option>`).join('');
-  const eSel=document.getElementById('as-editor');
-  eSel.innerHTML='<option value="">اختر المونتير...</option>'+allEditors.filter(e=>e.status==='active').map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
-  document.getElementById('as-notes').value='';
-  openModal('modal-assign');
-}
-async function saveAssignment(){
-  const orderId=document.getElementById('as-order').value;
-  const editorId=document.getElementById('as-editor').value;
-  if(!orderId||!editorId){alert('اختر الطلب والمونتير');return}
-  await sb.from('order_assignments').insert({order_id:orderId,editor_id:editorId,assigned_by:adminUser.id,notes:document.getElementById('as-notes').value.trim()});
-  closeModal('modal-assign');loadAssignments();
-}
-async function changeAssignStatus(id,val){
-  if(!val)return;
-  const upd={status:val};
-  if(val==='completed')upd.completed_at=new Date().toISOString();
-  await sb.from('order_assignments').update(upd).eq('id',id);
-  loadAssignments();
-}
+/* ═══ ADMIN: DELIVER ═══ */
+async function loadDeliver(){if(!allOrders.length){const{data}=await sb.from('orders').select('*').order('created_at',{ascending:false});allOrders=data||[]}document.getElementById('deliver-tbody').innerHTML=allOrders.map(o=>`<tr><td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td><td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td><td><span class="status-badge ${o.status}">${(statusMap[o.status]||statusMap.pending).l}</span></td><td>${o.video_url?`<a href="${o.video_url}" target="_blank" style="color:var(--success);font-size:12px">✓ تم</a>`:'—'}</td><td><button class="action-btn success" onclick="openDeliverModal('${o.order_id}')">📦</button></td></tr>`).join('')}
+function openDeliverModal(oid){document.getElementById('del-order-id').value=oid;document.getElementById('del-url').value='';document.getElementById('del-note').value='';openModal('modal-deliver')}
+async function submitDelivery(){const oid=document.getElementById('del-order-id').value;const url=document.getElementById('del-url').value.trim();if(!url){alert('أدخل الرابط');return}await sb.from('orders').update({video_url:url,video_note:document.getElementById('del-note').value.trim(),status:'completed'}).eq('order_id',oid);closeModal('modal-deliver');if(userRole==='admin'){loadDeliver();loadAll()}else loadMyDeliver()}
 
-/* ═══ DELIVER ═══ */
-async function loadDeliverOrders(){
-  if(!allOrders.length){const{data}=await sb.from('orders').select('*').order('created_at',{ascending:false});allOrders=data||[]}
-  document.getElementById('deliver-tbody').innerHTML=allOrders.map(o=>`<tr>
-    <td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id||'—'}</td>
-    <td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td>
-    <td><span class="status-badge ${o.status||'pending'}">${(statusMap[o.status]||statusMap.pending).l}</span></td>
-    <td>${o.video_url?`<a href="${o.video_url}" target="_blank" style="color:var(--success);font-size:12px">✓ تم التسليم</a>`:'<span style="color:var(--muted);font-size:12px">—</span>'}</td>
-    <td><button class="action-btn success" onclick="openDeliverModal('${o.order_id}')">📦 تسليم</button></td>
-  </tr>`).join('');
-}
-function openDeliverModal(orderId){
-  document.getElementById('del-order-id').value=orderId;
-  document.getElementById('del-url').value='';
-  document.getElementById('del-note').value='';
-  openModal('modal-deliver');
-}
-async function submitDelivery(){
-  const orderId=document.getElementById('del-order-id').value;
-  const url=document.getElementById('del-url').value.trim();
-  if(!url){alert('أدخل رابط الفيديو');return}
-  await sb.from('orders').update({video_url:url,video_note:document.getElementById('del-note').value.trim(),status:'completed'}).eq('order_id',orderId);
-  closeModal('modal-deliver');loadDeliverOrders();loadAll();
-}
-
-/* ═══ CHAT ═══ */
+/* ═══ ADMIN: CHAT ═══ */
 let currentConvId=null;
-async function loadConversations(){
-  const{data}=await sb.from('conversations').select('*').order('updated_at',{ascending:false});
-  allConversations=data||[];
-  document.getElementById('chat-tbody').innerHTML=allConversations.length?allConversations.map(c=>`<tr>
-    <td style="font-weight:600">${c.user_name||'—'}</td>
-    <td style="color:var(--muted);font-size:12px">${c.user_email||'—'}</td>
-    <td style="color:var(--muted);font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.last_msg||'—'}</td>
-    <td><span class="status-badge ${c.status==='open'?'active':'inactive'}">${c.status==='open'?'🟢 مفتوح':'🔴 مغلق'}</span></td>
-    <td style="color:var(--muted);font-size:12px">${c.updated_at?new Date(c.updated_at).toLocaleString('ar-IQ'):'—'}</td>
-    <td class="actions-cell">
-      <button class="action-btn gold" onclick="openChatView('${c.id}','${c.user_name||''}')">💬 عرض</button>
-      <button class="action-btn ${c.status==='open'?'danger':'success'}" onclick="toggleConvStatus('${c.id}','${c.status}')">${c.status==='open'?'🔒 إغلاق':'🔓 فتح'}</button>
-    </td>
-  </tr>`).join(''):'<tr><td colspan="6" class="empty-state">لا توجد محادثات</td></tr>';
+async function loadConvos(){const{data}=await sb.from('conversations').select('*').order('updated_at',{ascending:false});allConversations=data||[];document.getElementById('chat-tbody').innerHTML=allConversations.length?allConversations.map(c=>`<tr><td style="font-weight:600">${c.user_name||'—'}</td><td style="color:var(--muted);font-size:12px">${c.user_email||'—'}</td><td style="color:var(--muted);font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.last_msg||'—'}</td><td><span class="status-badge ${c.status==='open'?'active':'inactive'}">${c.status==='open'?'🟢 مفتوح':'🔴 مغلق'}</span></td><td class="actions-cell"><button class="action-btn gold" onclick="openChat('${c.id}','${(c.user_name||'').replace(/'/g,"\\'")}')">💬</button><button class="action-btn ${c.status==='open'?'danger':'success'}" onclick="togConv('${c.id}','${c.status}')">${c.status==='open'?'🔒':'🔓'}</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">لا توجد محادثات</td></tr>'}
+async function openChat(cid,name){currentConvId=cid;document.getElementById('chat-view-title').textContent='💬 '+name;const{data:msgs}=await sb.from('messages').select('*').eq('conversation_id',cid).order('created_at',{ascending:true});const box=document.getElementById('chat-messages-box');box.innerHTML=(msgs||[]).map(m=>{const iu=m.sender==='user';const t=new Date(m.created_at).toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});let med='';if(m.file_url){const isI=/\.(jpg|jpeg|png|gif|webp)$/i.test(m.file_url);med=isI?`<img src="${m.file_url}" style="max-width:160px;border-radius:8px;margin-top:4px;display:block">`:`<a href="${m.file_url}" target="_blank" style="color:var(--gold);font-size:12px">📎</a>`}return`<div style="padding:8px 12px;margin-bottom:6px;border-radius:10px;max-width:80%;font-size:13px;line-height:1.7;${iu?'background:rgba(255,255,255,.04);border:1px solid var(--border)':'background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;margin-right:auto;margin-left:0'}">${m.content!=='📎 ملف'?m.content:''}${med}<div style="font-size:9px;opacity:.5;margin-top:3px">${t} — ${iu?'الزبون':'الدعم'}</div></div>`}).join('')||'<div class="empty-state">لا رسائل</div>';box.scrollTop=box.scrollHeight;openModal('modal-chat-view')}
+async function sendReply(){const inp=document.getElementById('chat-reply-inp');const txt=inp.value.trim();if(!txt||!currentConvId)return;inp.value='';await sb.from('messages').insert({conversation_id:currentConvId,sender:'support',content:txt});await sb.from('conversations').update({last_msg:txt.slice(0,80),updated_at:new Date().toISOString()}).eq('id',currentConvId);openChat(currentConvId,document.getElementById('chat-view-title').textContent.replace('💬 ',''))}
+async function togConv(id,st){await sb.from('conversations').update({status:st==='open'?'closed':'open'}).eq('id',id);loadConvos()}
+
+/* ═══ EDITOR: MY ORDERS ═══ */
+async function loadMyOrders(){
+  if(!editorRecord)return;
+  const{data:assigns}=await sb.from('order_assignments').select('*').eq('editor_id',editorRecord.id).order('assigned_at',{ascending:false});
+  if(!assigns||!assigns.length){document.getElementById('my-orders-tbody').innerHTML='<tr><td colspan="6" class="empty-state">لا توجد طلبات معيّنة إلك بعد</td></tr>';return}
+  // Fetch order details
+  const orderIds=assigns.map(a=>a.order_id);
+  const{data:orders}=await sb.from('orders').select('*').in('order_id',orderIds);
+  const ordMap={};if(orders)orders.forEach(o=>ordMap[o.order_id]=o);
+  document.getElementById('my-orders-tbody').innerHTML=assigns.map(a=>{
+    const o=ordMap[a.order_id]||{};
+    return`<tr><td style="color:var(--gold);font-family:monospace;font-weight:700">${a.order_id}</td><td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td><td>${(o.package_price||0).toLocaleString()} د.ع</td><td><span class="status-badge ${a.status}">${(assignMap[a.status]||assignMap.assigned).l}</span></td><td class="actions-cell"><button class="action-btn" onclick="viewOrder('${a.order_id}')">👁</button><select onchange="chgMyAssign('${a.id}',this.value);this.value=''" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px;border-radius:6px;font-family:var(--font);cursor:pointer"><option value="">الحالة</option><option value="in_progress">قيد التنفيذ</option><option value="completed">مكتمل</option></select></td></tr>`}).join('');
+  // Store for viewOrder
+  allOrders=orders||[];
+}
+async function chgMyAssign(id,v){if(!v)return;const u={status:v};if(v==='completed')u.completed_at=new Date().toISOString();await sb.from('order_assignments').update(u).eq('id',id);loadMyOrders()}
+
+/* ═══ EDITOR: DELIVER ═══ */
+async function loadMyDeliver(){
+  if(!editorRecord)return;
+  const{data:assigns}=await sb.from('order_assignments').select('order_id').eq('editor_id',editorRecord.id);
+  if(!assigns||!assigns.length){document.getElementById('my-deliver-tbody').innerHTML='<tr><td colspan="5" class="empty-state">لا توجد طلبات</td></tr>';return}
+  const ids=assigns.map(a=>a.order_id);
+  const{data:orders}=await sb.from('orders').select('*').in('order_id',ids);
+  document.getElementById('my-deliver-tbody').innerHTML=(orders||[]).map(o=>`<tr><td style="color:var(--gold);font-family:monospace;font-weight:700">${o.order_id}</td><td>${o.client_name||'—'}</td><td>${o.package_name||'—'}</td><td>${o.video_url?`<a href="${o.video_url}" target="_blank" style="color:var(--success);font-size:12px">✓ تم</a>`:'—'}</td><td><button class="action-btn success" onclick="openDeliverModal('${o.order_id}')">📦 تسليم</button></td></tr>`).join('');
 }
 
-async function openChatView(convId,userName){
-  currentConvId=convId;
-  document.getElementById('chat-view-title').textContent='💬 محادثة مع '+userName;
-  const{data:msgs}=await sb.from('messages').select('*').eq('conversation_id',convId).order('created_at',{ascending:true});
-  const box=document.getElementById('chat-messages-box');
-  box.innerHTML=(msgs||[]).map(m=>{
-    const isUser=m.sender==='user';
-    const t=new Date(m.created_at).toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
-    let media='';
-    if(m.file_url){
-      const isImg=/\.(jpg|jpeg|png|gif|webp)$/i.test(m.file_url);
-      media=isImg?`<img src="${m.file_url}" style="max-width:160px;border-radius:8px;margin-top:4px;display:block">`:`<a href="${m.file_url}" target="_blank" style="color:var(--gold);font-size:12px;display:block;margin-top:4px">📎 ملف مرفق</a>`;
-    }
-    return `<div style="padding:8px 12px;margin-bottom:6px;border-radius:10px;max-width:80%;font-size:13px;line-height:1.7;${isUser?'background:rgba(255,255,255,.04);border:1px solid var(--border);align-self:flex-start':'background:linear-gradient(135deg,var(--gold),#c09a3e);color:#080810;margin-right:auto;margin-left:0'}">${m.content!=='📎 ملف'?m.content:''}${media}<div style="font-size:9px;opacity:.5;margin-top:3px">${t} — ${isUser?'الزبون':'أنت'}</div></div>`;
-  }).join('')||'<div class="empty-state">لا توجد رسائل</div>';
-  box.scrollTop=box.scrollHeight;
-  openModal('modal-chat-view');
-}
-
-async function sendAdminReply(){
-  const inp=document.getElementById('chat-reply-inp');
-  const txt=inp.value.trim();
-  if(!txt||!currentConvId)return;
-  inp.value='';
-  await sb.from('messages').insert({conversation_id:currentConvId,sender:'support',content:txt});
-  await sb.from('conversations').update({last_msg:txt.slice(0,80),updated_at:new Date().toISOString()}).eq('id',currentConvId);
-  openChatView(currentConvId,document.getElementById('chat-view-title').textContent.replace('💬 محادثة مع ',''));
-}
-
-async function toggleConvStatus(id,current){
-  const newStatus=current==='open'?'closed':'open';
-  await sb.from('conversations').update({status:newStatus}).eq('id',id);
-  loadConversations();
+/* ═══ EDITOR: CHAT ═══ */
+async function loadMyConvos(){
+  if(!editorRecord)return;
+  // Get order IDs assigned to this editor
+  const{data:assigns}=await sb.from('order_assignments').select('order_id').eq('editor_id',editorRecord.id);
+  if(!assigns||!assigns.length){document.getElementById('my-chat-tbody').innerHTML='<tr><td colspan="3" class="empty-state">لا توجد محادثات</td></tr>';return}
+  const orderIds=assigns.map(a=>a.order_id);
+  // Get orders to find user_ids
+  const{data:orders}=await sb.from('orders').select('order_id,user_id,client_name').in('order_id',orderIds);
+  if(!orders||!orders.length){document.getElementById('my-chat-tbody').innerHTML='<tr><td colspan="3" class="empty-state">لا توجد محادثات</td></tr>';return}
+  const userIds=[...new Set(orders.map(o=>o.user_id).filter(Boolean))];
+  // Get conversations for these users
+  const{data:convos}=await sb.from('conversations').select('*').in('user_id',userIds).order('updated_at',{ascending:false});
+  document.getElementById('my-chat-tbody').innerHTML=(convos||[]).length?(convos||[]).map(c=>`<tr><td style="font-weight:600">${c.user_name||'—'}</td><td style="color:var(--muted);font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.last_msg||'—'}</td><td><button class="action-btn gold" onclick="openChat('${c.id}','${(c.user_name||'').replace(/'/g,"\\'")}')">💬 رد</button></td></tr>`).join(''):'<tr><td colspan="3" class="empty-state">لا توجد محادثات</td></tr>';
 }
 
 /* ═══ MODALS ═══ */
